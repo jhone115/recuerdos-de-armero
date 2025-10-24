@@ -1,7 +1,7 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     const polaroidGrid = document.querySelector('.polaroid-grid');
-    
+
     const polaroids = [
         { 
             id: 1, 
@@ -112,10 +112,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (isGitHubPages) {
                     // Para GitHub Pages
-                    window.location.href = '../lado%20b/principal.html';
+                    window.location.href = '../lado%20b/b.html';
                 } else {
                     // Para desarrollo local
-                    window.location.href = '../lado b/principal.html';
+                    window.location.href = '../lado b/b.html';
                 }
             }, 1000);
         }
