@@ -10,6 +10,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnAtras = document.getElementById("btn-atras");
   const btnAdelante = document.getElementById("btn-adelante");
 
+  // Guardar estado de pantalla completa
+  const guardarEstadoFullscreen = (estado) => {
+    localStorage.setItem('fullscreen', estado ? 'true' : 'false');
+  };
+
   // Función para cambiar de pantalla (intro -> contenido)
   const cambiarPantalla = () => {
     // Reiniciar estilos de intro antes de la animación
@@ -77,6 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
   btnAtras.addEventListener("click", volverPortada);
   
   btnAdelante.addEventListener("click", () => {
+    // Guardar estado actual antes de redirigir
+    guardarEstadoFullscreen(!!document.fullscreenElement);
     // Redirigir a otro HTML
     window.location.href = "codigo/lado a/a.html";
   });
@@ -87,8 +94,10 @@ document.addEventListener("DOMContentLoaded", () => {
       document.documentElement.requestFullscreen().catch(err => {
         console.error(`Error al activar pantalla completa: ${err.message}`);
       });
+      guardarEstadoFullscreen(true);
     } else {
       document.exitFullscreen();
+      guardarEstadoFullscreen(false);
     }
   });
 
@@ -96,8 +105,21 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("fullscreenchange", () => {
     if (document.fullscreenElement) {
       fullscreenBtn.src = "../recursos/imagenes/menos.png";
+      guardarEstadoFullscreen(true);
     } else {
       fullscreenBtn.src = "../recursos/imagenes/mas.png";
+      guardarEstadoFullscreen(false);
     }
   });
+
+  // Verificar estado al cargar la página
+  const fullscreenEstado = localStorage.getItem('fullscreen');
+  if (fullscreenEstado === 'true' && !document.fullscreenElement) {
+    // Intentar restaurar pantalla completa
+    setTimeout(() => {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Error al restaurar pantalla completa: ${err.message}`);
+      });
+    }, 500);
+  }
 });
