@@ -10,51 +10,48 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const polaroidGrid = document.querySelector('.polaroid-grid');
-    const fullscreenBtn = document.getElementById('fullscreen-btn'); // Asegúrate de tener este botón en a.html
-
-document.addEventListener('DOMContentLoaded', function() {
-    const polaroidGrid = document.querySelector('.polaroid-grid');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
 
     const polaroids = [
         { 
             id: 1, 
             title: "", 
-            image: "../../recursos/imagenes/IMG-20251005-WA0010.jpg",
+            image: "recursos/imagenes/IMG-20251005-WA0010.jpg",
             description: "",
             rotation: "-3deg"
         },
         { 
             id: 2, 
             title: "", 
-            image: "../../recursos/imagenes/IMG-20251005-WA0012.jpg",
+            image: "recursos/imagenes/IMG-20251005-WA0012.jpg",
             description: "",
             rotation: "2deg"
         },
         { 
             id: 3, 
             title: "", 
-            image: "../../recursos/imagenes/IMG-20251005-WA0014.jpg",
+            image: "recursos/imagenes/IMG-20251005-WA0014.jpg",
             description: "",
             rotation: "-1deg"
         },
         { 
             id: 4, 
             title: "", 
-            image: "../../recursos/imagenes/IMG-20251005-WA0013.jpg",
+            image: "recursos/imagenes/IMG-20251005-WA0013.jpg",
             description: "",
             rotation: "3deg"
         },
         { 
             id: 5, 
             title: "", 
-            image: "../../recursos/imagenes/IMG-20251005-WA0004.jpg",
+            image: "recursos/imagenes/IMG-20251005-WA0004.jpg",
             description: "",
             rotation: "-2deg"
         },
         { 
             id: 6, 
             title: "", 
-            image: "../../recursos/imagenes/IMG-20251005-WA0008.jpg",
+            image: "recursos/imagenes/IMG-20251005-WA0008.jpg",
             description: "",
             rotation: "1deg"
         }
@@ -85,16 +82,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Cambiar imagen según el estado de pantalla completa
         document.addEventListener("fullscreenchange", () => {
             if (document.fullscreenElement) {
-                fullscreenBtn.src = "../recursos/imagenes/menos.png";
+                fullscreenBtn.src = "recursos/imagenes/menos.png";
                 guardarEstadoFullscreen(true);
             } else {
-                fullscreenBtn.src = "../recursos/imagenes/mas.png";
+                fullscreenBtn.src = "recursos/imagenes/mas.png";
                 guardarEstadoFullscreen(false);
             }
         });
     }
 
- // Verificar qué polaroids se han visto
+    // Verificar qué polaroids se han visto
     const getVistoPolaroids = () => {
         const visto = localStorage.getItem('vistoPolaroids');
         return visto ? JSON.parse(visto) : [];
@@ -147,6 +144,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Marcar esta polaroid como vista
             setVistoPolaroid(id);
             
+            // Guardar estado de pantalla completa antes de redirigir
+            guardarEstadoFullscreen(!!document.fullscreenElement);
+            
             // Si es la polaroid 6 y todas han sido vistas, ir al Lado B
             if (id === 6 && todasVistas()) {
                 // Aplicar animación de paso de hoja de libro a toda la pantalla
@@ -154,14 +154,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Redirigir al lado B después de la animación
                 setTimeout(() => {
-                    // Detectar si estamos en GitHub Pages o local
-                    const isGitHubPages = window.location.hostname.includes('github.io');
-                    
                     if (isGitHubPages) {
-                        // Para GitHub Pages
-                        window.location.href = '../lado%20b/b.html';
+                        window.location.href = 'lado-b/b.html';
                     } else {
-                        // Para desarrollo local
                         window.location.href = '../lado b/b.html';
                     }
                 }, 1000);
@@ -201,5 +196,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Verificar al cargar si todas están vistas
     actualizarSextaPolaroid();
-})
 });
