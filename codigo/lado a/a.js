@@ -16,42 +16,42 @@ document.addEventListener('DOMContentLoaded', function() {
         { 
             id: 1, 
             title: "", 
-            image: "recursos/imagenes/IMG-20251005-WA0010.jpg",
+            image: "../recursos/imagenes/IMG-20251005-WA0010.jpg",
             description: "",
             rotation: "-3deg"
         },
         { 
             id: 2, 
             title: "", 
-            image: "recursos/imagenes/IMG-20251005-WA0012.jpg",
+            image: "../recursos/imagenes/IMG-20251005-WA0012.jpg",
             description: "",
             rotation: "2deg"
         },
         { 
             id: 3, 
             title: "", 
-            image: "recursos/imagenes/IMG-20251005-WA0014.jpg",
+            image: "../recursos/imagenes/IMG-20251005-WA0014.jpg",
             description: "",
             rotation: "-1deg"
         },
         { 
             id: 4, 
             title: "", 
-            image: "recursos/imagenes/IMG-20251005-WA0013.jpg",
+            image: "../recursos/imagenes/IMG-20251005-WA0013.jpg",
             description: "",
             rotation: "3deg"
         },
         { 
             id: 5, 
             title: "", 
-            image: "recursos/imagenes/IMG-20251005-WA0004.jpg",
+            image: "../recursos/imagenes/IMG-20251005-WA0004.jpg",
             description: "",
             rotation: "-2deg"
         },
         { 
             id: 6, 
             title: "", 
-            image: "recursos/imagenes/IMG-20251005-WA0008.jpg",
+            image: "../recursos/imagenes/IMG-20251005-WA0008.jpg",
             description: "",
             rotation: "1deg"
         }
@@ -82,13 +82,20 @@ document.addEventListener('DOMContentLoaded', function() {
         // Cambiar imagen según el estado de pantalla completa
         document.addEventListener("fullscreenchange", () => {
             if (document.fullscreenElement) {
-                fullscreenBtn.src = "recursos/imagenes/menos.png";
+                fullscreenBtn.src = "../recursos/imagenes/menos.png";
                 guardarEstadoFullscreen(true);
             } else {
-                fullscreenBtn.src = "recursos/imagenes/mas.png";
+                fullscreenBtn.src = "../recursos/imagenes/mas.png";
                 guardarEstadoFullscreen(false);
             }
         });
+
+        // Establecer imagen inicial del botón
+        if (document.fullscreenElement) {
+            fullscreenBtn.src = "../recursos/imagenes/menos.png";
+        } else {
+            fullscreenBtn.src = "../recursos/imagenes/mas.png";
+        }
     }
 
     // Verificar qué polaroids se han visto
@@ -157,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (isGitHubPages) {
                         window.location.href = 'lado-b/b.html';
                     } else {
-                        window.location.href = '../lado b/b.html';
+                        window.location.href = 'lado b/b.html';
                     }
                 }, 1000);
             } else {

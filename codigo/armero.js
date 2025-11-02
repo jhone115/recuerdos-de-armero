@@ -104,10 +104,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Cambiar imagen según el estado de pantalla completa
   document.addEventListener("fullscreenchange", () => {
     if (document.fullscreenElement) {
-      fullscreenBtn.src = "../recursos/imagenes/menos.png";
+      fullscreenBtn.src = "recursos/imagenes/menos.png";
       guardarEstadoFullscreen(true);
     } else {
-      fullscreenBtn.src = "../recursos/imagenes/mas.png";
+      fullscreenBtn.src = "recursos/imagenes/mas.png";
       guardarEstadoFullscreen(false);
     }
   });
@@ -121,5 +121,12 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error(`Error al restaurar pantalla completa: ${err.message}`);
       });
     }, 500);
+  }
+
+  // Establecer imagen inicial del botón
+  if (document.fullscreenElement) {
+    fullscreenBtn.src = "recursos/imagenes/menos.png";
+  } else {
+    fullscreenBtn.src = "recursos/imagenes/mas.png";
   }
 });
