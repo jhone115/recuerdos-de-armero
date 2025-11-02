@@ -30,6 +30,7 @@ const imageData = {
         description: "“Hoy en día hay unos muros, pero estos muros están en un grave riesgo porque la misma naturaleza va retomando. Así que hay árboles que han crecido y como no los hemos sabido controlar a tiempo, ya son árboles inmensos que han crecido dentro de las habitaciones y los espacios de las casas y pues estas empiezan a caerse. A veces incluso se caen los mismos árboles, que no pueden arraigarse porque encuentran los pisos y se expanden pero no se arraigan en profundidad y cualquier viento viene, los tumba y tumba los muros”, advierte."
     }
 };
+// En a_exp.html, después de cargar los datos:
 if (imageId) {
     // Marcar esta polaroid como vista en el nuevo sistema
     const getVistoPolaroids = () => {

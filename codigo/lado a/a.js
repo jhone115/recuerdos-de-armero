@@ -133,27 +133,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Añadir evento de clic para la animación y redirección
         polaroidElement.addEventListener('click', function(e) {
-            // Evitar que se active al hacer clic en la flecha
-            if (e.target.closest('.continue-arrow')) {
-                return;
-            }
-            
             const id = this.getAttribute('data-id');
             
-            // Marcar esta polaroid como vista
-            setVistoPolaroid(parseInt(id));
-            
-            // Guardar estado de pantalla completa antes de redirigir
-            localStorage.setItem('fullscreen', document.fullscreenElement ? 'true' : 'false');
-            
-            // Si es la polaroid 6 y TODAS han sido vistas, ir al Lado B
-            if (id === '6' && todasVistas()) {
+            // Si es la polaroid 6 CON FLECHA (todas vistas), ir al Lado B
+            if (id === '6' && this.classList.contains('polaroid-with-arrow')) {
+                // Guardar estado de pantalla completa antes de redirigir
+                localStorage.setItem('fullscreen', document.fullscreenElement ? 'true' : 'false');
+                
                 // Aplicar animación de paso de hoja de libro a toda la pantalla
                 document.querySelector('.pantalla-a').classList.add('page-turn');
                 
-                // Redirigir después de la animación
+                // Redirigir al Lado B después de la animación
                 setTimeout(() => {
-                    // Detectar si estamos en GitHub Pages o local
                     const isGitHubPages = window.location.hostname.includes('github.io');
                     
                     if (isGitHubPages) {
@@ -162,15 +153,23 @@ document.addEventListener('DOMContentLoaded', function() {
                         window.location.href = '../lado b/b.html';
                     }
                 }, 1000);
-            } else {
-                // Aplicar animación de paso de hoja de libro a toda la pantalla
-                document.querySelector('.pantalla-a').classList.add('page-turn');
-                
-                // Redirigir después de la animación
-                setTimeout(() => {
-                    window.location.href = `a_exp.html?id=${id}`;
-                }, 1000);
+                return;
             }
+            
+            // Para TODAS las polaroids (incluida la 6ta sin flecha), ir a a_exp.html
+            // Marcar esta polaroid como vista
+            setVistoPolaroid(parseInt(id));
+            
+            // Guardar estado de pantalla completa antes de redirigir
+            localStorage.setItem('fullscreen', document.fullscreenElement ? 'true' : 'false');
+            
+            // Aplicar animación de paso de hoja de libro a toda la pantalla
+            document.querySelector('.pantalla-a').classList.add('page-turn');
+            
+            // Redirigir a la experiencia
+            setTimeout(() => {
+                window.location.href = `a_exp.html?id=${id}`;
+            }, 1000);
         });
         
         polaroidGrid.appendChild(polaroidElement);
