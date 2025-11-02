@@ -52,21 +52,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return visto ? JSON.parse(visto) : [];
     };
 
-    const setVistoPolaroid = (id) => {
-        const visto = getVistoPolaroids();
-        if (!visto.includes(id)) {
-            visto.push(id);
-            localStorage.setItem('vistoPolaroids', JSON.stringify(visto));
-            console.log('✅ Polaroid marcada como vista:', id);
-        }
-    };
-
     const todasVistas = () => {
         const visto = getVistoPolaroids();
-        const todasVistas = polaroids.every(polaroid => visto.includes(polaroid.id));
-        console.log('📋 Polaroids vistas:', visto);
-        console.log('🎯 Todas vistas?', todasVistas);
-        return todasVistas;
+        return polaroids.every(polaroid => visto.includes(polaroid.id));
     };
 
     // Configurar pantalla completa
@@ -112,13 +100,10 @@ document.addEventListener('DOMContentLoaded', function() {
         polaroidElement.style.setProperty('--rotation', polaroid.rotation);
         polaroidElement.setAttribute('data-id', polaroid.id);
         
-        // DEBUG: Verificar estado de esta polaroid
-        const polaroidVista = getVistoPolaroids().includes(polaroid.id);
-        console.log(`🔍 Polaroid ${polaroid.id} vista?`, polaroidVista);
+        // Verificar si mostrar flecha (solo para polaroid 6 cuando todas están vistas)
+        const mostrarFlecha = (polaroid.id === 6 && todasVistas());
         
-        // Contenido especial para la sexta polaroid si TODAS fueron vistas
-        if (polaroid.id === 6 && todasVistas()) {
-            console.log('🎯 Mostrando flecha en polaroid 6');
+        if (mostrarFlecha) {
             polaroidElement.innerHTML = `
                 <div class="polaroid-image" style="background-image: url('${polaroid.image}')">
                     <div class="continue-arrow">
@@ -137,47 +122,32 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         }
         
-        // Añadir evento de clic para la animación y redirección
+        // Añadir evento de clic
         polaroidElement.addEventListener('click', function(e) {
             const id = this.getAttribute('data-id');
-            console.log('🖱️ Clic en polaroid:', id);
             
-            // Guardar estado de pantalla completa antes de redirigir
+            // Guardar estado de pantalla completa
             localStorage.setItem('fullscreen', document.fullscreenElement ? 'true' : 'false');
             
-            // Si es la polaroid 6 CON FLECHA (todas vistas), ir al Lado B
+            // Si es la polaroid 6 CON FLECHA, ir al Lado B
             if (id === '6' && this.classList.contains('polaroid-with-arrow')) {
-                console.log('🚀 Redirigiendo al Lado B desde flecha');
-                
-                // Aplicar animación de paso de hoja de libro a toda la pantalla
                 document.querySelector('.pantalla-a').classList.add('page-turn');
-                
-                // Redirigir al Lado B después de la animación
                 setTimeout(() => {
                     const isGitHubPages = window.location.hostname.includes('github.io');
-                    
                     if (isGitHubPages) {
                         window.location.href = '../lado%20b/b.html';
                     } else {
                         window.location.href = '../lado b/b.html';
                     }
                 }, 1000);
-                return;
+            } 
+            // Para TODAS las otras polaroids (incluida la 6ta SIN flecha), ir a a_exp.html
+            else {
+                document.querySelector('.pantalla-a').classList.add('page-turn');
+                setTimeout(() => {
+                    window.location.href = `a_exp.html?id=${id}`;
+                }, 1000);
             }
-            
-            // Para TODAS las polaroids (incluida la 6ta sin flecha), ir a a_exp.html
-            console.log('📄 Redirigiendo a experiencia:', id);
-            
-            // Marcar esta polaroid como vista (IMPORTANTE: esto se hace para TODAS las polaroids)
-            setVistoPolaroid(parseInt(id));
-            
-            // Aplicar animación de paso de hoja de libro a toda la pantalla
-            document.querySelector('.pantalla-a').classList.add('page-turn');
-            
-            // Redirigir a la experiencia
-            setTimeout(() => {
-                window.location.href = `a_exp.html?id=${id}`;
-            }, 1000);
         });
         
         polaroidGrid.appendChild(polaroidElement);
@@ -188,7 +158,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (todasVistas()) {
             const sextaPolaroid = document.querySelector('.polaroid[data-id="6"]');
             if (sextaPolaroid && !sextaPolaroid.classList.contains('polaroid-with-arrow')) {
-                console.log('🔄 Actualizando polaroid 6 con flecha');
                 sextaPolaroid.innerHTML = `
                     <div class="polaroid-image" style="background-image: url('${polaroids[5].image}')">
                         <div class="continue-arrow">
@@ -205,6 +174,5 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Verificar al cargar si todas están vistas y actualizar
-    console.log('🔍 Estado inicial - Todas vistas?', todasVistas());
     actualizarSextaPolaroid();
 });

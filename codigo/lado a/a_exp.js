@@ -1,9 +1,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 const imageId = urlParams.get('id');
 
-// Detectar si estamos en GitHub Pages
-const isGitHubPages = window.location.hostname.includes('github.io');
-
 const imageData = {
     1: {
         image: "../../recursos/imagenes/IMG-20251005-WA0010.jpg",
@@ -31,46 +28,11 @@ const imageData = {
     }
 };
 
-// Función para manejar las polaroids vistas
-const getVistoPolaroids = () => {
-    const visto = localStorage.getItem('vistoPolaroids');
-    console.log(' En a_exp - Polaroids vistas:', visto);
-    return visto ? JSON.parse(visto) : [];
-};
-
-const setVistoPolaroid = (id) => {
-    const visto = getVistoPolaroids();
-    if (!visto.includes(id)) {
-        visto.push(id);
-        localStorage.setItem('vistoPolaroids', JSON.stringify(visto));
-        console.log(' En a_exp - Polaroid marcada como vista:', id);
-    }
-};
-
-// Función para guardar estado de pantalla completa
-const guardarEstadoFullscreen = (estado) => {
-    localStorage.setItem('fullscreen', estado ? 'true' : 'false');
-};
-
 // Cargar los datos correspondientes al ID
 document.addEventListener('DOMContentLoaded', function() {
-    console.log(' a_exp.html cargado - ID:', imageId);
-    
-    // Verificar y restaurar pantalla completa
-    const fullscreenEstado = localStorage.getItem('fullscreen');
-    console.log(' En a_exp - Estado fullscreen:', fullscreenEstado);
-    
-    if (fullscreenEstado === 'true' && !document.fullscreenElement) {
-        console.log(' En a_exp - Intentando restaurar pantalla completa...');
-        // En GitHub Pages no podemos activar automáticamente, necesita interacción del usuario
-    }
-
-    const fullscreenBtn = document.getElementById('fullscreen-btn');
     const data = imageData[imageId] || imageData[1];
     
-    console.log('🔍 En a_exp - Datos cargados para ID:', imageId, data);
-    
-    // Establecer la imagen de fondo para cubrir toda la pantalla
+    // Establecer la imagen de fondo
     const body = document.getElementById('main-body');
     if (body && data.image) {
         body.style.backgroundImage = `url('${data.image}')`;
@@ -78,61 +40,64 @@ document.addEventListener('DOMContentLoaded', function() {
         body.style.backgroundPosition = "center";
         body.style.backgroundRepeat = "no-repeat";
         body.style.backgroundAttachment = "fixed";
-        console.log(' En a_exp - Imagen de fondo establecida:', data.image);
     }
     
     // Establecer la descripción
     const descElement = document.getElementById('detail-description');
     if (descElement) {
         descElement.textContent = data.description;
-        console.log(' En a_exp - Descripción establecida');
-    }
-
-    if (imageId) {
-        setVistoPolaroid(parseInt(imageId));
-        console.log(' En a_exp - Polaroid marcada como vista:', imageId);
-        
-        // Verificar estado actual de todas las polaroids
-        const vistoActual = getVistoPolaroids();
-        console.log(' En a_exp - Estado actual de polaroids vistas:', vistoActual);
-        console.log(' En a_exp - Todas las polaroids vistas?', vistoActual.length === 6);
     }
     
-    // Guardar estado de pantalla completa
-    guardarEstadoFullscreen(!!document.fullscreenElement);
-
-    // Configurar botón de pantalla completa si existe
-    if (fullscreenBtn) {
-        console.log(' En a_exp - Configurando botón de pantalla completa');
+    // ⭐⭐ MARCAR ESTA POLAROID COMO VISTA ⭐⭐
+    if (imageId) {
+        const getVistoPolaroids = () => {
+            const visto = localStorage.getItem('vistoPolaroids');
+            return visto ? JSON.parse(visto) : [];
+        };
         
+        const setVistoPolaroid = (id) => {
+            const visto = getVistoPolaroids();
+            if (!visto.includes(id)) {
+                visto.push(id);
+                localStorage.setItem('vistoPolaroids', JSON.stringify(visto));
+            }
+        };
+        
+        setVistoPolaroid(parseInt(imageId));
+        
+        // Guardar estado de pantalla completa
+        localStorage.setItem('fullscreen', document.fullscreenElement ? 'true' : 'false');
+    }
+
+    // Configurar botón de pantalla completa
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    if (fullscreenBtn) {
+        const guardarEstadoFullscreen = (estado) => {
+            localStorage.setItem('fullscreen', estado ? 'true' : 'false');
+        };
+
         fullscreenBtn.addEventListener("click", () => {
             if (!document.fullscreenElement) {
-                console.log(' En a_exp - Activando pantalla completa');
                 document.documentElement.requestFullscreen().catch(err => {
-                    console.error(' En a_exp - Error activando pantalla completa:', err);
+                    console.error(`Error al activar pantalla completa: ${err.message}`);
                 });
                 guardarEstadoFullscreen(true);
             } else {
-                console.log(' En a_exp - Saliendo de pantalla completa');
                 document.exitFullscreen();
                 guardarEstadoFullscreen(false);
             }
         });
 
-        // Cambiar imagen según el estado de pantalla completa
         document.addEventListener("fullscreenchange", () => {
-            const isFullscreen = !!document.fullscreenElement;
-            console.log(' En a_exp - Cambio de pantalla completa:', isFullscreen);
-            guardarEstadoFullscreen(isFullscreen);
-            
-            if (isFullscreen) {
+            if (document.fullscreenElement) {
                 fullscreenBtn.src = "../../recursos/imagenes/menos.png";
+                guardarEstadoFullscreen(true);
             } else {
                 fullscreenBtn.src = "../../recursos/imagenes/mas.png";
+                guardarEstadoFullscreen(false);
             }
         });
 
-        // Establecer imagen inicial del botón
         if (document.fullscreenElement) {
             fullscreenBtn.src = "../../recursos/imagenes/menos.png";
         } else {
@@ -141,41 +106,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Botón de atrás con animación reversa
+// Botón de atrás
 document.addEventListener('DOMContentLoaded', function() {
     const btnAtras = document.getElementById('btn-atras');
     if (btnAtras) {
-        console.log(' En a_exp - Configurando botón atrás');
-        
         btnAtras.addEventListener('click', function() {
-            console.log(' En a_exp - Clic en botón atrás');
-            
-            // Guardar estado actual antes de redirigir
-            guardarEstadoFullscreen(!!document.fullscreenElement);
-            console.log(' En a_exp - Guardando estado fullscreen para volver');
-            
-            // Aplicar animación reversa
-            const mainBody = document.getElementById('main-body');
-            if (mainBody) {
-                mainBody.classList.add('page-turn-reverse');
-            }
-            
-            // Redirigir después de la animación
+            localStorage.setItem('fullscreen', document.fullscreenElement ? 'true' : 'false');
+            document.getElementById('main-body').classList.add('page-turn-reverse');
             setTimeout(() => {
-                console.log(' En a_exp - Redirigiendo a a.html');
                 window.location.href = 'a.html';
             }, 1200);
         });
-    } else {
-        console.log(' En a_exp - Botón atrás no encontrado');
-    }
-});
-
-// También mantener el código antiguo por compatibilidad
-document.addEventListener('DOMContentLoaded', function() {
-    // Código antiguo para marcar polaroid 6 como vista (compatibilidad)
-    if (imageId === '6') {
-        localStorage.setItem('vistoPolaroid6', 'true');
-        console.log(' En a_exp - Marcado vistoPolaroid6 (compatibilidad)');
     }
 });
