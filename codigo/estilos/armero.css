@@ -64,7 +64,9 @@ body {
   align-items: center;
   transition: opacity 1.2s ease, transform 1.2s ease;
 }
-
+.fondo-b{
+  background: rgba(0, 0, 0);
+}
 .fondo-a{
   background: url("../../recursos/imagenes/armero\ fondo\ a.jpeg");
 }
