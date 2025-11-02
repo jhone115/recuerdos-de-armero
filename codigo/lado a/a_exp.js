@@ -30,31 +30,11 @@ const imageData = {
         description: "“Hoy en día hay unos muros, pero estos muros están en un grave riesgo porque la misma naturaleza va retomando. Así que hay árboles que han crecido y como no los hemos sabido controlar a tiempo, ya son árboles inmensos que han crecido dentro de las habitaciones y los espacios de las casas y pues estas empiezan a caerse. A veces incluso se caen los mismos árboles, que no pueden arraigarse porque encuentran los pisos y se expanden pero no se arraigan en profundidad y cualquier viento viene, los tumba y tumba los muros”, advierte."
     }
 };
-// En a_exp.html, después de cargar los datos:
-if (imageId) {
-    // Marcar esta polaroid como vista en el nuevo sistema
-    const getVistoPolaroids = () => {
-        const visto = localStorage.getItem('vistoPolaroids');
-        return visto ? JSON.parse(visto) : [];
-    };
-    
-    const setVistoPolaroid = (id) => {
-        const visto = getVistoPolaroids();
-        if (!visto.includes(id)) {
-            visto.push(id);
-            localStorage.setItem('vistoPolaroids', JSON.stringify(visto));
-        }
-    };
-    
-    setVistoPolaroid(parseInt(imageId));
-    
-    // Guardar estado de pantalla completa
-    localStorage.setItem('fullscreen', document.fullscreenElement ? 'true' : 'false');
-}
 
 // Función para manejar las polaroids vistas
 const getVistoPolaroids = () => {
     const visto = localStorage.getItem('vistoPolaroids');
+    console.log(' En a_exp - Polaroids vistas:', visto);
     return visto ? JSON.parse(visto) : [];
 };
 
@@ -63,6 +43,7 @@ const setVistoPolaroid = (id) => {
     if (!visto.includes(id)) {
         visto.push(id);
         localStorage.setItem('vistoPolaroids', JSON.stringify(visto));
+        console.log(' En a_exp - Polaroid marcada como vista:', id);
     }
 };
 
@@ -73,18 +54,21 @@ const guardarEstadoFullscreen = (estado) => {
 
 // Cargar los datos correspondientes al ID
 document.addEventListener('DOMContentLoaded', function() {
+    console.log(' a_exp.html cargado - ID:', imageId);
+    
     // Verificar y restaurar pantalla completa
     const fullscreenEstado = localStorage.getItem('fullscreen');
+    console.log(' En a_exp - Estado fullscreen:', fullscreenEstado);
+    
     if (fullscreenEstado === 'true' && !document.fullscreenElement) {
-        setTimeout(() => {
-            document.documentElement.requestFullscreen().catch(err => {
-                console.error(`Error al restaurar pantalla completa: ${err.message}`);
-            });
-        }, 500);
+        console.log(' En a_exp - Intentando restaurar pantalla completa...');
+        // En GitHub Pages no podemos activar automáticamente, necesita interacción del usuario
     }
 
     const fullscreenBtn = document.getElementById('fullscreen-btn');
     const data = imageData[imageId] || imageData[1];
+    
+    console.log('🔍 En a_exp - Datos cargados para ID:', imageId, data);
     
     // Establecer la imagen de fondo para cubrir toda la pantalla
     const body = document.getElementById('main-body');
@@ -94,28 +78,42 @@ document.addEventListener('DOMContentLoaded', function() {
         body.style.backgroundPosition = "center";
         body.style.backgroundRepeat = "no-repeat";
         body.style.backgroundAttachment = "fixed";
+        console.log(' En a_exp - Imagen de fondo establecida:', data.image);
     }
     
     // Establecer la descripción
     const descElement = document.getElementById('detail-description');
     if (descElement) {
         descElement.textContent = data.description;
+        console.log(' En a_exp - Descripción establecida');
     }
-    
-    // Marcar esta polaroid como vista
+
     if (imageId) {
         setVistoPolaroid(parseInt(imageId));
+        console.log(' En a_exp - Polaroid marcada como vista:', imageId);
+        
+        // Verificar estado actual de todas las polaroids
+        const vistoActual = getVistoPolaroids();
+        console.log(' En a_exp - Estado actual de polaroids vistas:', vistoActual);
+        console.log(' En a_exp - Todas las polaroids vistas?', vistoActual.length === 6);
     }
+    
+    // Guardar estado de pantalla completa
+    guardarEstadoFullscreen(!!document.fullscreenElement);
 
     // Configurar botón de pantalla completa si existe
     if (fullscreenBtn) {
+        console.log(' En a_exp - Configurando botón de pantalla completa');
+        
         fullscreenBtn.addEventListener("click", () => {
             if (!document.fullscreenElement) {
+                console.log(' En a_exp - Activando pantalla completa');
                 document.documentElement.requestFullscreen().catch(err => {
-                    console.error(`Error al activar pantalla completa: ${err.message}`);
+                    console.error(' En a_exp - Error activando pantalla completa:', err);
                 });
                 guardarEstadoFullscreen(true);
             } else {
+                console.log(' En a_exp - Saliendo de pantalla completa');
                 document.exitFullscreen();
                 guardarEstadoFullscreen(false);
             }
@@ -123,20 +121,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Cambiar imagen según el estado de pantalla completa
         document.addEventListener("fullscreenchange", () => {
-            if (document.fullscreenElement) {
-                fullscreenBtn.src = "../recursos/imagenes/menos.png";
-                guardarEstadoFullscreen(true);
+            const isFullscreen = !!document.fullscreenElement;
+            console.log(' En a_exp - Cambio de pantalla completa:', isFullscreen);
+            guardarEstadoFullscreen(isFullscreen);
+            
+            if (isFullscreen) {
+                fullscreenBtn.src = "../../recursos/imagenes/menos.png";
             } else {
-                fullscreenBtn.src = "../recursos/imagenes/mas.png";
-                guardarEstadoFullscreen(false);
+                fullscreenBtn.src = "../../recursos/imagenes/mas.png";
             }
         });
 
         // Establecer imagen inicial del botón
         if (document.fullscreenElement) {
-            fullscreenBtn.src = "../recursos/imagenes/menos.png";
+            fullscreenBtn.src = "../../recursos/imagenes/menos.png";
         } else {
-            fullscreenBtn.src = "../recursos/imagenes/mas.png";
+            fullscreenBtn.src = "../../recursos/imagenes/mas.png";
         }
     }
 });
@@ -145,9 +145,14 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     const btnAtras = document.getElementById('btn-atras');
     if (btnAtras) {
+        console.log(' En a_exp - Configurando botón atrás');
+        
         btnAtras.addEventListener('click', function() {
+            console.log(' En a_exp - Clic en botón atrás');
+            
             // Guardar estado actual antes de redirigir
             guardarEstadoFullscreen(!!document.fullscreenElement);
+            console.log(' En a_exp - Guardando estado fullscreen para volver');
             
             // Aplicar animación reversa
             const mainBody = document.getElementById('main-body');
@@ -157,8 +162,20 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Redirigir después de la animación
             setTimeout(() => {
+                console.log(' En a_exp - Redirigiendo a a.html');
                 window.location.href = 'a.html';
             }, 1200);
         });
+    } else {
+        console.log(' En a_exp - Botón atrás no encontrado');
+    }
+});
+
+// También mantener el código antiguo por compatibilidad
+document.addEventListener('DOMContentLoaded', function() {
+    // Código antiguo para marcar polaroid 6 como vista (compatibilidad)
+    if (imageId === '6') {
+        localStorage.setItem('vistoPolaroid6', 'true');
+        console.log(' En a_exp - Marcado vistoPolaroid6 (compatibilidad)');
     }
 });

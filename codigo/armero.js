@@ -1,134 +1,132 @@
 document.addEventListener("DOMContentLoaded", () => {
-    console.log('✅ Página principal cargada');
+  const intro = document.getElementById("intro");
+  const contenido = document.getElementById("contenido");
+  const texto = contenido.querySelector(".texto");
+  const titulo = intro.querySelector(".titulo");
+  const subtitulo = intro.querySelector(".subtitulo");
+  const fullscreenBtn = document.getElementById("fullscreen-btn");
+  
+  // Botones de navegación
+  const btnAtras = document.getElementById("btn-atras");
+  const btnAdelante = document.getElementById("btn-adelante");
+
+  // Guardar estado de pantalla completa
+  const guardarEstadoFullscreen = (estado) => {
+    localStorage.setItem('fullscreen', estado ? 'true' : 'false');
+  };
+
+  // Función para cambiar de pantalla (intro -> contenido)
+  const cambiarPantalla = () => {
+    // Reiniciar estilos de intro antes de la animación
+    intro.style.opacity = "1";
+    intro.style.transform = "scale(1)";
     
-    const intro = document.getElementById("intro");
-    const contenido = document.getElementById("contenido");
-    const texto = contenido ? contenido.querySelector(".texto") : null;
-    const titulo = intro ? intro.querySelector(".titulo") : null;
-    const subtitulo = intro ? intro.querySelector(".subtitulo") : null;
-    const fullscreenBtn = document.getElementById("fullscreen-btn");
-    const btnAtras = document.getElementById("btn-atras");
-    const btnAdelante = document.getElementById("btn-adelante");
+    // Aplicar animación de salida
+    intro.style.opacity = "0";
+    intro.style.transform = "scale(1.05)";
 
-    console.log('🔍 Elementos encontrados:', {
-        intro: !!intro,
-        contenido: !!contenido,
-        texto: !!texto,
-        titulo: !!titulo,
-        subtitulo: !!subtitulo,
-        fullscreenBtn: !!fullscreenBtn,
-        btnAtras: !!btnAtras,
-        btnAdelante: !!btnAdelante
-    });
+    setTimeout(() => {
+      intro.classList.add("oculto");
+      contenido.classList.remove("oculto");
+      
+      // Reiniciar estilos de contenido antes de mostrarlo
+      contenido.style.opacity = "0";
+      contenido.style.transform = "scale(1)";
+      
+      // Forzar reflow para asegurar que la transición funcione
+      contenido.offsetHeight;
 
-    // Verificar estado de pantalla completa
-    const fullscreenEstado = localStorage.getItem('fullscreen');
-    console.log('🔍 Estado fullscreen:', fullscreenEstado);
+      setTimeout(() => {
+        contenido.style.opacity = "1";
+        contenido.classList.add("mostrar");
+        texto.classList.add("mostrar");
+      }, 50);
+    }, 1000);
+  };
 
-    if (fullscreenEstado === 'true' && !document.fullscreenElement) {
-        console.log('🔄 Intentando restaurar pantalla completa...');
-        // En GitHub Pages, necesitamos una interacción del usuario
-        // Solo intentaremos si hay un botón de pantalla completa
+  // Función para volver a la portada (contenido -> intro)
+  const volverPortada = () => {
+    // Reiniciar estilos de contenido antes de la animación
+    contenido.style.opacity = "1";
+    contenido.style.transform = "scale(1)";
+    
+    // Aplicar animación de salida
+    contenido.style.opacity = "0";
+    contenido.style.transform = "scale(1.05)";
+
+    setTimeout(() => {
+      contenido.classList.add("oculto");
+      contenido.classList.remove("mostrar");
+      texto.classList.remove("mostrar");
+      intro.classList.remove("oculto");
+      
+      // Reiniciar estilos de intro antes de mostrarlo
+      intro.style.opacity = "0";
+      intro.style.transform = "scale(1)";
+      
+      // Forzar reflow para asegurar que la transición funcione
+      intro.offsetHeight;
+
+      setTimeout(() => {
+        intro.style.opacity = "1";
+        intro.style.transform = "scale(1)";
+      }, 50);
+    }, 1000);
+  };
+
+  // Añadir evento a título y subtítulo
+  titulo.addEventListener("click", cambiarPantalla);
+  subtitulo.addEventListener("click", cambiarPantalla);
+
+  // Eventos para botones de navegación
+  btnAtras.addEventListener("click", volverPortada);
+  
+  btnAdelante.addEventListener("click", () => {
+    // Guardar estado actual antes de redirigir
+    guardarEstadoFullscreen(!!document.fullscreenElement);
+    // Redirigir a otro HTML
+    window.location.href = "codigo/lado a/a.html";
+  });
+  
+  // Función para pantalla completa
+  fullscreenBtn.addEventListener("click", () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Error al activar pantalla completa: ${err.message}`);
+      });
+      guardarEstadoFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      guardarEstadoFullscreen(false);
     }
+  });
 
-    // Configurar botón de pantalla completa
-    if (fullscreenBtn) {
-        console.log('🔧 Configurando botón de pantalla completa');
-        
-        fullscreenBtn.addEventListener("click", () => {
-            if (!document.fullscreenElement) {
-                console.log('🔄 Activando pantalla completa');
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.error('❌ Error activando pantalla completa:', err);
-                });
-                localStorage.setItem('fullscreen', 'true');
-            } else {
-                console.log('🔙 Saliendo de pantalla completa');
-                document.exitFullscreen();
-                localStorage.setItem('fullscreen', 'false');
-            }
-        });
-
-        document.addEventListener("fullscreenchange", () => {
-            const isFullscreen = !!document.fullscreenElement;
-            console.log('🔄 Cambio de pantalla completa:', isFullscreen);
-            localStorage.setItem('fullscreen', isFullscreen ? 'true' : 'false');
-            
-            if (isFullscreen) {
-                fullscreenBtn.src = "recursos/imagenes/menos.png";
-            } else {
-                fullscreenBtn.src = "recursos/imagenes/mas.png";
-            }
-        });
-
-        // Establecer imagen inicial
-        if (document.fullscreenElement) {
-            fullscreenBtn.src = "recursos/imagenes/menos.png";
-        } else {
-            fullscreenBtn.src = "recursos/imagenes/mas.png";
-        }
+  // Cambiar imagen según el estado de pantalla completa
+  document.addEventListener("fullscreenchange", () => {
+    if (document.fullscreenElement) {
+      fullscreenBtn.src = "recursos/imagenes/menos.png";
+      guardarEstadoFullscreen(true);
+    } else {
+      fullscreenBtn.src = "recursos/imagenes/mas.png";
+      guardarEstadoFullscreen(false);
     }
+  });
 
-    // Solo configurar eventos si los elementos existen
-    if (titulo && subtitulo) {
-        titulo.addEventListener("click", cambiarPantalla);
-        subtitulo.addEventListener("click", cambiarPantalla);
-    }
+  // Verificar estado al cargar la página
+  const fullscreenEstado = localStorage.getItem('fullscreen');
+  if (fullscreenEstado === 'true' && !document.fullscreenElement) {
+    // Intentar restaurar pantalla completa
+    setTimeout(() => {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Error al restaurar pantalla completa: ${err.message}`);
+      });
+    }, 500);
+  }
 
-    if (btnAtras) {
-        btnAtras.addEventListener("click", volverPortada);
-    }
-
-    if (btnAdelante) {
-        btnAdelante.addEventListener("click", () => {
-            console.log('🚀 Redirigiendo a lado A');
-            localStorage.setItem('fullscreen', document.fullscreenElement ? 'true' : 'false');
-            window.location.href = "codigo/lado a/a.html";
-        });
-    }
-
-    function cambiarPantalla() {
-        console.log('🔄 Cambiando a pantalla de contenido');
-        if (!intro || !contenido) return;
-        
-        intro.style.opacity = "0";
-        intro.style.transform = "scale(1.05)";
-
-        setTimeout(() => {
-            intro.classList.add("oculto");
-            contenido.classList.remove("oculto");
-            
-            contenido.style.opacity = "0";
-            contenido.offsetHeight;
-
-            setTimeout(() => {
-                contenido.style.opacity = "1";
-                contenido.classList.add("mostrar");
-                if (texto) texto.classList.add("mostrar");
-            }, 50);
-        }, 1000);
-    }
-
-    function volverPortada() {
-        console.log('🔙 Volviendo a portada');
-        if (!intro || !contenido) return;
-        
-        contenido.style.opacity = "0";
-        contenido.style.transform = "scale(1.05)";
-
-        setTimeout(() => {
-            contenido.classList.add("oculto");
-            contenido.classList.remove("mostrar");
-            if (texto) texto.classList.remove("mostrar");
-            intro.classList.remove("oculto");
-            
-            intro.style.opacity = "0";
-            intro.offsetHeight;
-
-            setTimeout(() => {
-                intro.style.opacity = "1";
-                intro.style.transform = "scale(1)";
-            }, 50);
-        }, 1000);
-    }
+  // Establecer imagen inicial del botón
+  if (document.fullscreenElement) {
+    fullscreenBtn.src = "recursos/imagenes/menos.png";
+  } else {
+    fullscreenBtn.src = "recursos/imagenes/mas.png";
+  }
 });
