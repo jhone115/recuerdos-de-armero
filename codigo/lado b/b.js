@@ -1,10 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('=== INICIANDO DEBUGGING B.JS ===');
+    console.log('=== INICIANDO B.JS ===');
     
     const polaroidGrid = document.querySelector('.polaroid-grid');
-    console.log('1. polaroidGrid:', polaroidGrid);
-    console.log('2. Ubicación actual:', window.location.href);
-
     const polaroids = [
         { 
             id: 1, 
@@ -50,28 +47,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     ];
 
-    console.log('3. Polaroids definidas:', polaroids.length);
-
-    // TEST: Verificar si las imágenes existen
-    console.log('4. === TEST DE IMÁGENES ===');
-    polaroids.forEach(polaroid => {
-        const testImg = new Image();
-        testImg.onload = function() {
-            console.log(`✅ Imagen ${polaroid.id} CARGA: ${polaroid.image}`);
-        };
-        testImg.onerror = function() {
-            console.log(`❌ Imagen ${polaroid.id} NO CARGA: ${polaroid.image}`);
-            console.log(`   Ruta completa sería: ${window.location.origin}/${polaroid.image}`);
-        };
-        testImg.src = polaroid.image;
-    });
-
-    // Crear las polaroids
-    console.log('5. === CREANDO POLAROIDS ===');
+    // Crear las polaroids (SIN rotación individual en estilo, ya está en CSS)
     polaroids.forEach(polaroid => {
         const polaroidElement = document.createElement('div');
         polaroidElement.className = 'polaroid';
-        polaroidElement.style.transform = `rotate(${polaroid.rotation})`;
         polaroidElement.setAttribute('data-id', polaroid.id);
         
         polaroidElement.innerHTML = `
@@ -79,41 +58,49 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="polaroid-caption">${polaroid.title}</div>
         `;
         
-        console.log(`   Polaroid ${polaroid.id} creada con imagen: ${polaroid.image}`);
-        
-        // Evento clic simple para testing
+        // Evento clic
         polaroidElement.addEventListener('click', function() {
             const id = this.getAttribute('data-id');
-            console.log(`📍 CLICK en polaroid ${id}`);
-            alert(`Click en polaroid ${id} - Revisa la consola para más detalles`);
+            console.log('Click en polaroid:', id);
+            
+            // Para testing, redirige a la página de detalle
+            window.location.href = `b_exp.html?id=${id}`;
         });
         
         polaroidGrid.appendChild(polaroidElement);
     });
 
-    console.log('6. === VERIFICACIÓN FINAL ===');
-    console.log('   Polaroids en grid:', polaroidGrid.children.length);
-    console.log('   Estilos aplicados:', document.querySelector('.polaroid')?.className);
+    // Configurar botones
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    if (fullscreenBtn) {
+        fullscreenBtn.addEventListener("click", () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        });
+    }
+
+    const btnAtras = document.getElementById('btn-atras');
+    if (btnAtras) {
+        btnAtras.addEventListener('click', function() {
+            window.location.href = '../../index.html';
+        });
+    }
 });
 
 // Sistema de audio
 function initAudio() {
     const audio = document.getElementById('backgroundio');
-    if (!audio) {
-        console.log('❌ Audio no encontrado');
-        return;
+    if (audio) {
+        audio.volume = 0.3;
+        document.addEventListener('click', function() {
+            if (audio.paused) {
+                audio.play();
+            }
+        });
     }
-    
-    console.log('✅ Audio encontrado');
-    audio.volume = 0.3;
-    
-    document.addEventListener('click', function() {
-        if (audio.paused) {
-            audio.play().catch(error => {
-                console.log('Audio requiere interacción del usuario');
-            });
-        }
-    });
 }
 
 if (document.readyState === 'loading') {
