@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== INICIANDO DEBUGGING B.JS ===');
+    
     const polaroidGrid = document.querySelector('.polaroid-grid');
-    console.log('polaroidGrid encontrado:', polaroidGrid);
+    console.log('1. polaroidGrid:', polaroidGrid);
+    console.log('2. Ubicación actual:', window.location.href);
 
     const polaroids = [
         { 
@@ -47,136 +50,70 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     ];
 
-    // Sistema de visualización
-    const getVistoPolaroids = () => {
-        const visto = sessionStorage.getItem('vistoPolaroidsB');
-        return visto ? JSON.parse(visto) : [];
-    };
+    console.log('3. Polaroids definidas:', polaroids.length);
 
-    const setVistoPolaroid = (id) => {
-        const visto = getVistoPolaroids();
-        if (!visto.includes(id)) {
-            visto.push(id);
-            sessionStorage.setItem('vistoPolaroidsB', JSON.stringify(visto));
-        }
-    };
-
-    const todasVistas = () => {
-        const visto = getVistoPolaroids();
-        return polaroids.every(polaroid => visto.includes(polaroid.id));
-    };
-
-    // Configurar pantalla completa
-    const fullscreenBtn = document.getElementById('fullscreen-btn');
-    if (fullscreenBtn) {
-        console.log('Botón fullscreen encontrado');
-        fullscreenBtn.addEventListener("click", () => {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.error('Error al activar pantalla completa:', err);
-                });
-            } else {
-                document.exitFullscreen();
-            }
-        });
-
-        document.addEventListener("fullscreenchange", () => {
-            if (document.fullscreenElement) {
-                fullscreenBtn.src = "../../recursos/imagenes/menos.png";
-            } else {
-                fullscreenBtn.src = "../../recursos/imagenes/mas.png";
-            }
-        });
-    }
-
-    // Configurar botón atrás
-    const btnAtras = document.getElementById('btn-atras');
-    if (btnAtras) {
-        btnAtras.addEventListener('click', function() {
-            window.location.href = '../../index.html';
-        });
-    }
+    // TEST: Verificar si las imágenes existen
+    console.log('4. === TEST DE IMÁGENES ===');
+    polaroids.forEach(polaroid => {
+        const testImg = new Image();
+        testImg.onload = function() {
+            console.log(`✅ Imagen ${polaroid.id} CARGA: ${polaroid.image}`);
+        };
+        testImg.onerror = function() {
+            console.log(`❌ Imagen ${polaroid.id} NO CARGA: ${polaroid.image}`);
+            console.log(`   Ruta completa sería: ${window.location.origin}/${polaroid.image}`);
+        };
+        testImg.src = polaroid.image;
+    });
 
     // Crear las polaroids
+    console.log('5. === CREANDO POLAROIDS ===');
     polaroids.forEach(polaroid => {
         const polaroidElement = document.createElement('div');
         polaroidElement.className = 'polaroid';
         polaroidElement.style.transform = `rotate(${polaroid.rotation})`;
         polaroidElement.setAttribute('data-id', polaroid.id);
         
-        // Verificar si mostrar flecha
-        const mostrarFlecha = polaroid.id === 6 && todasVistas();
-        
         polaroidElement.innerHTML = `
-            <div class="polaroid-image" style="background-image: url('${polaroid.image}')">
-                ${mostrarFlecha ? `
-                <div class="continue-arrow">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </div>
-                ` : ''}
-            </div>
+            <div class="polaroid-image" style="background-image: url('${polaroid.image}')"></div>
             <div class="polaroid-caption">${polaroid.title}</div>
         `;
         
-        if (mostrarFlecha) {
-            polaroidElement.classList.add('polaroid-with-arrow');
-        }
+        console.log(`   Polaroid ${polaroid.id} creada con imagen: ${polaroid.image}`);
         
-        // Evento clic
+        // Evento clic simple para testing
         polaroidElement.addEventListener('click', function() {
             const id = this.getAttribute('data-id');
-            console.log('Polaroid clickeada:', id);
-            
-            if (id === '6' && this.classList.contains('polaroid-with-arrow')) {
-                // Ir al inicio
-                sessionStorage.removeItem('vistoPolaroidsB');
-                document.querySelector('.pantalla-b').classList.add('page-turn');
-                setTimeout(() => {
-                    window.location.href = '../../index.html';
-                }, 1000);
-            } else {
-                // Ir a página de detalle
-                document.querySelector('.pantalla-b').classList.add('page-turn');
-                setTimeout(() => {
-                    window.location.href = `b_exp.html?id=${id}`;
-                }, 1000);
-            }
+            console.log(`📍 CLICK en polaroid ${id}`);
+            alert(`Click en polaroid ${id} - Revisa la consola para más detalles`);
         });
         
         polaroidGrid.appendChild(polaroidElement);
-        console.log('Polaroid agregada:', polaroid.id);
     });
 
-    console.log('Total polaroids creadas:', polaroidGrid.children.length);
+    console.log('6. === VERIFICACIÓN FINAL ===');
+    console.log('   Polaroids en grid:', polaroidGrid.children.length);
+    console.log('   Estilos aplicados:', document.querySelector('.polaroid')?.className);
 });
 
 // Sistema de audio
 function initAudio() {
     const audio = document.getElementById('backgroundio');
     if (!audio) {
-        console.log('Audio no encontrado');
+        console.log('❌ Audio no encontrado');
         return;
     }
     
-    console.log('Audio encontrado, inicializando...');
+    console.log('✅ Audio encontrado');
     audio.volume = 0.3;
-    
-    const playAudio = () => {
-        audio.play().catch(error => {
-            console.log('Audio requiere interacción del usuario:', error);
-        });
-    };
     
     document.addEventListener('click', function() {
         if (audio.paused) {
-            console.log('Reproduciendo audio por clic');
-            playAudio();
+            audio.play().catch(error => {
+                console.log('Audio requiere interacción del usuario');
+            });
         }
     });
-    
-    setTimeout(playAudio, 1000);
 }
 
 if (document.readyState === 'loading') {
