@@ -1,9 +1,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 const imageId = urlParams.get('id');
 
-console.log('=== DEBUG a_exp.html INICIADO ===');
-console.log('📱 ID recibido:', imageId);
-
 const imageData = {
     1: {
         image: "../../recursos/imagenes/IMG-20251005-WA0010.jpg",
@@ -33,8 +30,6 @@ const imageData = {
 
 // Cargar los datos correspondientes al ID
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔄 Cargando datos para ID:', imageId);
-    
     const data = imageData[imageId] || imageData[1];
     
     // Establecer la imagen de fondo
@@ -45,51 +40,70 @@ document.addEventListener('DOMContentLoaded', function() {
         body.style.backgroundPosition = "center";
         body.style.backgroundRepeat = "no-repeat";
         body.style.backgroundAttachment = "fixed";
-        console.log('🎨 Imagen de fondo establecida:', data.image);
     }
     
     // Establecer la descripción
     const descElement = document.getElementById('detail-description');
     if (descElement) {
         descElement.textContent = data.description;
-        console.log('📝 Descripción establecida');
     }
     
-    // ⭐⭐ MARCAR ESTA POLAROID COMO VISTA ⭐⭐
+    // ⭐⭐ MARCAR ESTA POLAROID COMO VISTA (sessionStorage) ⭐⭐
     if (imageId) {
-        console.log('🎯 Intentando marcar polaroid como vista:', imageId);
-        
         const getVistoPolaroids = () => {
-            const visto = localStorage.getItem('vistoPolaroids');
-            console.log('📋 Polaroids ANTES de marcar:', visto);
+            const visto = sessionStorage.getItem('vistoPolaroids');
             return visto ? JSON.parse(visto) : [];
         };
         
         const setVistoPolaroid = (id) => {
             const visto = getVistoPolaroids();
-            console.log('📋 Array de polaroids vistas antes:', visto);
-            
             if (!visto.includes(id)) {
                 visto.push(id);
-                localStorage.setItem('vistoPolaroids', JSON.stringify(visto));
-                console.log('✅ POLAROID MARCADA COMO VISTA:', id);
-                console.log('📋 Array de polaroids vistas después:', visto);
-            } else {
-                console.log('ℹ️ Polaroid ya estaba marcada como vista:', id);
+                sessionStorage.setItem('vistoPolaroids', JSON.stringify(visto));
             }
         };
         
         setVistoPolaroid(parseInt(imageId));
         
-        // Verificar estado final
-        const estadoFinal = localStorage.getItem('vistoPolaroids');
-        console.log('🏁 ESTADO FINAL en localStorage:', estadoFinal);
-        
-        // Guardar estado de pantalla completa
+        // Guardar estado de pantalla completa (localStorage)
         localStorage.setItem('fullscreen', document.fullscreenElement ? 'true' : 'false');
     }
 
-    console.log('=== DEBUG a_exp.html FINALIZADO ===');
+    // Configurar botón de pantalla completa
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    if (fullscreenBtn) {
+        const guardarEstadoFullscreen = (estado) => {
+            localStorage.setItem('fullscreen', estado ? 'true' : 'false');
+        };
+
+        fullscreenBtn.addEventListener("click", () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error(`Error al activar pantalla completa: ${err.message}`);
+                });
+                guardarEstadoFullscreen(true);
+            } else {
+                document.exitFullscreen();
+                guardarEstadoFullscreen(false);
+            }
+        });
+
+        document.addEventListener("fullscreenchange", () => {
+            if (document.fullscreenElement) {
+                fullscreenBtn.src = "../../recursos/imagenes/menos.png";
+                guardarEstadoFullscreen(true);
+            } else {
+                fullscreenBtn.src = "../../recursos/imagenes/mas.png";
+                guardarEstadoFullscreen(false);
+            }
+        });
+
+        if (document.fullscreenElement) {
+            fullscreenBtn.src = "../../recursos/imagenes/menos.png";
+        } else {
+            fullscreenBtn.src = "../../recursos/imagenes/mas.png";
+        }
+    }
 });
 
 // Botón de atrás
@@ -97,7 +111,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnAtras = document.getElementById('btn-atras');
     if (btnAtras) {
         btnAtras.addEventListener('click', function() {
-            console.log('🔙 Botón atrás clickeado');
             localStorage.setItem('fullscreen', document.fullscreenElement ? 'true' : 'false');
             document.getElementById('main-body').classList.add('page-turn-reverse');
             setTimeout(() => {
