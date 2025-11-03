@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== DEBUG a.html INICIADO ===');
+    
     const polaroidGrid = document.querySelector('.polaroid-grid');
+    console.log('Polaroid grid encontrado:', !!polaroidGrid);
 
     const polaroids = [
         { 
@@ -49,49 +52,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Sistema para rastrear TODAS las polaroids vistas
     const getVistoPolaroids = () => {
         const visto = localStorage.getItem('vistoPolaroids');
+        console.log('📋 Polaroids en localStorage:', visto);
         return visto ? JSON.parse(visto) : [];
     };
 
     const todasVistas = () => {
         const visto = getVistoPolaroids();
-        return polaroids.every(polaroid => visto.includes(polaroid.id));
+        const todas = polaroids.every(polaroid => visto.includes(polaroid.id));
+        console.log('🎯 ¿Todas las polaroids vistas?', todas);
+        console.log('📊 Polaroids vistas actualmente:', visto);
+        console.log('📊 Total de polaroids requeridas:', polaroids.length);
+        return todas;
     };
-
-    // Configurar pantalla completa
-    const fullscreenBtn = document.getElementById('fullscreen-btn');
-    if (fullscreenBtn) {
-        const guardarEstadoFullscreen = (estado) => {
-            localStorage.setItem('fullscreen', estado ? 'true' : 'false');
-        };
-
-        fullscreenBtn.addEventListener("click", () => {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.error(`Error al activar pantalla completa: ${err.message}`);
-                });
-                guardarEstadoFullscreen(true);
-            } else {
-                document.exitFullscreen();
-                guardarEstadoFullscreen(false);
-            }
-        });
-
-        document.addEventListener("fullscreenchange", () => {
-            if (document.fullscreenElement) {
-                fullscreenBtn.src = "../../recursos/imagenes/menos.png";
-                guardarEstadoFullscreen(true);
-            } else {
-                fullscreenBtn.src = "../../recursos/imagenes/mas.png";
-                guardarEstadoFullscreen(false);
-            }
-        });
-
-        if (document.fullscreenElement) {
-            fullscreenBtn.src = "../../recursos/imagenes/menos.png";
-        } else {
-            fullscreenBtn.src = "../../recursos/imagenes/mas.png";
-        }
-    }
 
     // Crear las polaroids
     polaroids.forEach(polaroid => {
@@ -100,10 +72,12 @@ document.addEventListener('DOMContentLoaded', function() {
         polaroidElement.style.setProperty('--rotation', polaroid.rotation);
         polaroidElement.setAttribute('data-id', polaroid.id);
         
-        // Verificar si mostrar flecha (solo para polaroid 6 cuando todas están vistas)
+        // Verificar si mostrar flecha
         const mostrarFlecha = (polaroid.id === 6 && todasVistas());
+        console.log(`🔍 Polaroid ${polaroid.id} - Mostrar flecha:`, mostrarFlecha);
         
         if (mostrarFlecha) {
+            console.log('🎯 CREANDO POLAROID 6 CON FLECHA');
             polaroidElement.innerHTML = `
                 <div class="polaroid-image" style="background-image: url('${polaroid.image}')">
                     <div class="continue-arrow">
@@ -125,12 +99,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // Añadir evento de clic
         polaroidElement.addEventListener('click', function(e) {
             const id = this.getAttribute('data-id');
+            console.log('🖱️ CLIC en polaroid:', id);
+            console.log('🔍 Tiene clase polaroid-with-arrow:', this.classList.contains('polaroid-with-arrow'));
             
             // Guardar estado de pantalla completa
             localStorage.setItem('fullscreen', document.fullscreenElement ? 'true' : 'false');
             
             // Si es la polaroid 6 CON FLECHA, ir al Lado B
             if (id === '6' && this.classList.contains('polaroid-with-arrow')) {
+                console.log('🚀 REDIRIGIENDO AL LADO B');
                 document.querySelector('.pantalla-a').classList.add('page-turn');
                 setTimeout(() => {
                     const isGitHubPages = window.location.hostname.includes('github.io');
@@ -143,6 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } 
             // Para TODAS las otras polaroids (incluida la 6ta SIN flecha), ir a a_exp.html
             else {
+                console.log('📄 REDIRIGIENDO A a_exp.html con id:', id);
                 document.querySelector('.pantalla-a').classList.add('page-turn');
                 setTimeout(() => {
                     window.location.href = `a_exp.html?id=${id}`;
@@ -153,26 +131,5 @@ document.addEventListener('DOMContentLoaded', function() {
         polaroidGrid.appendChild(polaroidElement);
     });
 
-    // Función para actualizar la sexta polaroid si es necesario
-    const actualizarSextaPolaroid = () => {
-        if (todasVistas()) {
-            const sextaPolaroid = document.querySelector('.polaroid[data-id="6"]');
-            if (sextaPolaroid && !sextaPolaroid.classList.contains('polaroid-with-arrow')) {
-                sextaPolaroid.innerHTML = `
-                    <div class="polaroid-image" style="background-image: url('${polaroids[5].image}')">
-                        <div class="continue-arrow">
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M5 12h14M12 5l7 7-7 7"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="polaroid-caption">${polaroids[5].title}</div>
-                `;
-                sextaPolaroid.classList.add('polaroid-with-arrow');
-            }
-        }
-    };
-
-    // Verificar al cargar si todas están vistas y actualizar
-    actualizarSextaPolaroid();
+    console.log('=== DEBUG a.html FINALIZADO ===');
 });
