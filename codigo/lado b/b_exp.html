@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <title>Armero-Tolima</title>
-    <link rel="stylesheet" href="../estilos/armero.css">
+    <link rel="stylesheet" href="../../codigo/estilos/armero.css">
 </head>
-<body class="pantalla pantalla-a" id="main-body">
+<body class="pantalla pantalla-b" id="main-body">
+    <!-- Botón de pantalla completa -->
+    <img id="fullscreen-btn" src="../../recursos/imagenes/mas.png" alt="Pantalla completa" class="nav-btn fullscreen-btn">
     <img src="../../recursos/imagenes/atras.png" alt="Atrás" class="nav-btn" id="btn-atras">
     
     <div class="wrapper">
@@ -17,10 +19,12 @@
             </div>
         </div>
     </div>
-    <!-- Audio agregado -->
-    <audio id="backgroundio" loop autoplay>
+    
+    <!-- Audio -->
+    <audio id="backgroundio" loop>
         <source src="../../recursos/sonoros/b.mp3" type="audio/mpeg">
     </audio>
+    
     <script src="b_exp.js"></script>
 </body>
 </html>

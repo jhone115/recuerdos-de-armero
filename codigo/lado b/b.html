@@ -5,18 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <title>Galería negative</title>
-    <link rel="stylesheet" href="../estilos/armero.css">
+    <link rel="stylesheet" href="../../codigo/estilos/armero.css">
 </head>
 <body>
-    <section id="lado a" class="pantalla pantalla-a fondo-b">  
-          <div class="container">
-        <div class="polaroid-grid">
+    <section class="pantalla pantalla-b fondo-b">  
+        <div class="container">
+            <!-- Botón de pantalla completa -->
+            <img id="fullscreen-btn" src="../../recursos/imagenes/mas.png" alt="Pantalla completa" class="nav-btn fullscreen-btn">
+            
+            <div class="polaroid-grid">
+                <!-- Las polaroids se generarán con JavaScript -->
+            </div>
+            
             <img id="btn-atras" src="../../recursos/imagenes/atras.png" alt="atras" class="nav-btn">
         </div>
-    </div>   
     </section>
-    <!-- Audio agregado -->
-    <audio id="backgroundio" loop autoplay>
+    
+    <!-- Audio -->
+    <audio id="backgroundio" loop>
         <source src="../../recursos/sonoros/b.mp3" type="audio/mpeg">
     </audio>
     

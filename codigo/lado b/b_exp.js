@@ -1,37 +1,40 @@
-const urlParams = new URLSearchParams(window.location.search);
-const imageId = urlParams.get('id');
-
-const imageData = {
-    1: {
-        image: "../recursos/imagenes/IMG-20251005-WA0010.jpg",
-        description: "Descripción para imagen 1 del lado B"
-    },
-    2: {
-        image: "../recursos/imagenes/IMG-20251005-WA0012.jpg",
-        description: "Descripción para imagen 2 del lado B"
-    },
-    3: {
-        image: "../recursos/imagenes/IMG-20251005-WA0014.jpg",
-        description: "Descripción para imagen 3 del lado B"
-    },
-    4: {
-        image: "../recursos/imagenes/IMG-20251005-WA0013.jpg",
-        description: "Descripción para imagen 4 del lado B"
-    },
-    5: {
-        image: "../recursos/imagenes/IMG-20251005-WA0004.jpg",
-        description: "Descripción para imagen 5 del lado B"
-    },
-    6: {
-        image: "../recursos/imagenes/IMG-20251005-WA0008.jpg",
-        description: "Descripción para imagen 6 del lado B"
-    }
-};
-
 document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const imageId = urlParams.get('id');
+    console.log('ID de imagen:', imageId);
+
+    const imageData = {
+        1: {
+            image: "../../recursos/imagenes/IMG-20251005-WA0010.jpg",
+            description: "Descripción para imagen 1 del lado B"
+        },
+        2: {
+            image: "../../recursos/imagenes/IMG-20251005-WA0012.jpg",
+            description: "Descripción para imagen 2 del lado B"
+        },
+        3: {
+            image: "../../recursos/imagenes/IMG-20251005-WA0014.jpg",
+            description: "Descripción para imagen 3 del lado B"
+        },
+        4: {
+            image: "../../recursos/imagenes/IMG-20251005-WA0013.jpg",
+            description: "Descripción para imagen 4 del lado B"
+        },
+        5: {
+            image: "../../recursos/imagenes/IMG-20251005-WA0004.jpg",
+            description: "Descripción para imagen 5 del lado B"
+        },
+        6: {
+            image: "../../recursos/imagenes/IMG-20251005-WA0008.jpg",
+            description: "Descripción para imagen 6 del lado B"
+        }
+    };
+
+    // Cargar datos
     const data = imageData[imageId] || imageData[1];
+    console.log('Datos cargados:', data);
     
-    // Establecer la imagen de fondo
+    // Establecer imagen de fondo
     const body = document.getElementById('main-body');
     if (body && data.image) {
         body.style.backgroundImage = `url('${data.image}')`;
@@ -39,15 +42,17 @@ document.addEventListener('DOMContentLoaded', function() {
         body.style.backgroundPosition = "center";
         body.style.backgroundRepeat = "no-repeat";
         body.style.backgroundAttachment = "fixed";
+        console.log('Imagen de fondo establecida:', data.image);
     }
     
-    // Establecer la descripción
+    // Establecer descripción
     const descElement = document.getElementById('detail-description');
     if (descElement) {
         descElement.textContent = data.description;
+        console.log('Descripción establecida');
     }
     
-    // Marcar polaroid como vista
+    // Marcar como vista
     if (imageId) {
         const getVistoPolaroids = () => {
             const visto = sessionStorage.getItem('vistoPolaroidsB');
@@ -56,59 +61,42 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const setVistoPolaroid = (id) => {
             const visto = getVistoPolaroids();
-            if (!visto.includes(id)) {
-                visto.push(id);
+            if (!visto.includes(parseInt(id))) {
+                visto.push(parseInt(id));
                 sessionStorage.setItem('vistoPolaroidsB', JSON.stringify(visto));
+                console.log('Polaroid marcada como vista:', id);
             }
         };
         
-        setVistoPolaroid(parseInt(imageId));
-        localStorage.setItem('fullscreen', document.fullscreenElement ? 'true' : 'false');
+        setVistoPolaroid(imageId);
     }
 
     // Configurar pantalla completa
     const fullscreenBtn = document.getElementById('fullscreen-btn');
     if (fullscreenBtn) {
-        const guardarEstadoFullscreen = (estado) => {
-            localStorage.setItem('fullscreen', estado ? 'true' : 'false');
-        };
-
         fullscreenBtn.addEventListener("click", () => {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
-                    console.error(`Error al activar pantalla completa: ${err.message}`);
+                    console.error('Error fullscreen:', err);
                 });
-                guardarEstadoFullscreen(true);
             } else {
                 document.exitFullscreen();
-                guardarEstadoFullscreen(false);
             }
         });
 
         document.addEventListener("fullscreenchange", () => {
             if (document.fullscreenElement) {
-                fullscreenBtn.src = "../recursos/imagenes/menos.png";
-                guardarEstadoFullscreen(true);
+                fullscreenBtn.src = "../../recursos/imagenes/menos.png";
             } else {
-                fullscreenBtn.src = "../recursos/imagenes/mas.png";
-                guardarEstadoFullscreen(false);
+                fullscreenBtn.src = "../../recursos/imagenes/mas.png";
             }
         });
-
-        if (document.fullscreenElement) {
-            fullscreenBtn.src = "../recursos/imagenes/menos.png";
-        } else {
-            fullscreenBtn.src = "../recursos/imagenes/mas.png";
-        }
     }
-});
 
-// Botón de atrás
-document.addEventListener('DOMContentLoaded', function() {
+    // Botón atrás
     const btnAtras = document.getElementById('btn-atras');
     if (btnAtras) {
         btnAtras.addEventListener('click', function() {
-            localStorage.setItem('fullscreen', document.fullscreenElement ? 'true' : 'false');
             document.getElementById('main-body').classList.add('page-turn-reverse');
             setTimeout(() => {
                 window.location.href = 'b.html';
