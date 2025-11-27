@@ -84,9 +84,41 @@
         .btn-activar-audio:hover {
             background-color: #3a5a80;
         }
+
+        /* Indicador de audio activo */
+        .indicador-audio {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .indicador-audio.mostrar {
+            display: block;
+        }
     </style>
 </head>
 <body>
+    <!-- Indicador de audio activo -->
+    <div class="indicador-audio" id="indicadorAudio">
+        🔊 Audio activo
+    </div>
+
+    <!-- Modal para activar el audio -->
+    <div class="modal-audio" id="modalAudio">
+        <div class="contenido-modal">
+            <h2>Bienvenido a la experiencia</h2>
+            <p>Para una experiencia completa, activa el audio de fondo. Haz clic en el botón para comenzar.</p>
+            <button class="btn-activar-audio" id="btnActivarAudio">Activar Audio</button>
+        </div>
+    </div>
+
     <div>
         <!-- Flecha para volver atrás -->
         <a href="../lado a/a.html" class="flecha-volver abajo-izquierda">
@@ -99,7 +131,7 @@
         </a>
         
         <div class="container-b">
-                        <audio id="bgMusic" loop>
+            <audio id="bgMusic" loop>
                 <source src="../../recursos/sonoros/b.mp3" type="audio/mpeg">
                 Tu navegador no soporta el elemento de audio.
             </audio>
@@ -148,23 +180,47 @@
             </div>
         </div>
     </div>
-            <script>
+    <script>
+        // Almacenamiento para mantener el estado del audio entre páginas (Lado B)
+        const AUDIO_STORAGE_KEY = 'audioEstadoArmeroB';
+        
         document.addEventListener('DOMContentLoaded', function() {
             const audio = document.getElementById('bgMusic');
             const modalAudio = document.getElementById('modalAudio');
             const btnActivarAudio = document.getElementById('btnActivarAudio');
+            const indicadorAudio = document.getElementById('indicadorAudio');
             
-            // Intentar reproducir el audio automáticamente (puede fallar en algunos navegadores)
-            const promesaAudio = audio.play();
+            // Cargar estado del audio desde localStorage
+            const estadoAudioGuardado = localStorage.getItem(AUDIO_STORAGE_KEY);
             
-            if (promesaAudio !== undefined) {
-                promesaAudio.then(function() {
-                    // Si se reproduce automáticamente, ocultar el modal
+            if (estadoAudioGuardado) {
+                const estadoAudio = JSON.parse(estadoAudioGuardado);
+                
+                // Si el audio estaba reproduciéndose, intentar continuar
+                if (estadoAudio.reproduciendo) {
+                    // Establecer el tiempo donde se quedó
+                    audio.currentTime = estadoAudio.tiempoActual || 0;
+                    
+                    // Ocultar el modal
                     modalAudio.classList.add('oculto');
-                }).catch(function(error) {
-                    // Si falla la reproducción automática, mostrar el modal
-                    console.log("La reproducción automática fue bloqueada. Mostrando modal de activación.");
-                });
+                    
+                    // Mostrar indicador de audio activo
+                    indicadorAudio.classList.add('mostrar');
+                    
+                    // Intentar reproducir
+                    audio.play().then(() => {
+                        console.log("Audio continuado desde:", audio.currentTime);
+                    }).catch(error => {
+                        console.log("No se pudo continuar automáticamente:", error);
+                        // Si falla, mostrar el modal para interacción del usuario
+                        modalAudio.classList.remove('oculto');
+                        indicadorAudio.classList.remove('mostrar');
+                    });
+                } else {
+                    // Si no estaba reproduciéndose, solo establecer el tiempo
+                    audio.currentTime = estadoAudio.tiempoActual || 0;
+                    modalAudio.classList.add('oculto');
+                }
             }
             
             // Configurar el botón para activar el audio
@@ -173,22 +229,52 @@
                     // Ocultar el modal cuando el audio se reproduzca correctamente
                     modalAudio.classList.add('oculto');
                     
-                    // Guardar preferencia del usuario para futuras visitas
-                    localStorage.setItem('audioActivado', 'true');
+                    // Mostrar indicador
+                    indicadorAudio.classList.add('mostrar');
+                    
+                    // Guardar estado del audio
+                    guardarEstadoAudio(audio);
                 }).catch(function(error) {
                     console.error("Error al reproducir el audio:", error);
                     alert("No se pudo reproducir el audio. Por favor, verifica que tu navegador permita la reproducción de audio.");
                 });
             });
             
-            // Verificar si el usuario ya activó el audio en una visita anterior
-            if (localStorage.getItem('audioActivado') === 'true') {
-                modalAudio.classList.add('oculto');
-                // Intentar reproducir el audio automáticamente
-                audio.play().catch(function(error) {
-                    console.log("No se pudo reproducir automáticamente, a pesar de la preferencia guardada.");
-                });
+            // Actualizar el estado del audio periódicamente
+            setInterval(function() {
+                guardarEstadoAudio(audio);
+            }, 1000); // Actualizar cada segundo
+            
+            // Guardar estado cuando la página se cierre o se navegue
+            window.addEventListener('beforeunload', function() {
+                guardarEstadoAudio(audio);
+            });
+            
+            // Función para guardar el estado del audio
+            function guardarEstadoAudio(audioElement) {
+                const estadoAudio = {
+                    reproduciendo: !audioElement.paused,
+                    tiempoActual: audioElement.currentTime,
+                    volumen: audioElement.volume,
+                    timestamp: Date.now()
+                };
+                
+                localStorage.setItem(AUDIO_STORAGE_KEY, JSON.stringify(estadoAudio));
             }
+            
+            // Limpiar estado después de 30 minutos de inactividad (opcional)
+            setInterval(function() {
+                const estadoAudioGuardado = localStorage.getItem(AUDIO_STORAGE_KEY);
+                if (estadoAudioGuardado) {
+                    const estadoAudio = JSON.parse(estadoAudioGuardado);
+                    const tiempoTranscurrido = Date.now() - estadoAudio.timestamp;
+                    
+                    // Si han pasado más de 30 minutos, limpiar el estado
+                    if (tiempoTranscurrido > 30 * 60 * 1000) {
+                        localStorage.removeItem(AUDIO_STORAGE_KEY);
+                    }
+                }
+            }, 5 * 60 * 1000); // Verificar cada 5 minutos
         });
     </script>
     <script src="b.js"></script>
