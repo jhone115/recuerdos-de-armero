@@ -1,114 +1,120 @@
-        // a_exp.js - Lado A Exposición (Versión Corregida)
+
+        // a_exp.js - Lado A Exposición (Sistema de rastreo mejorado)
         document.addEventListener('DOMContentLoaded', function() {
             const fondoExposicion = document.getElementById('fondo-exposicion');
             const tituloImagen = document.getElementById('titulo-imagen');
             const textoImagen = document.getElementById('texto-imagen');
             const flechaSiguiente = document.getElementById('flecha-siguiente');
             
-            console.log("Página de exposición cargada - Estado inicial");
+            console.log("=== EXPOSICIÓN INICIADA ===");
             
-            // INICIALMENTE ASEGURAR QUE LA FLECHA ESTÉ OCULTA
+            // Lista de todas las imágenes que deben ser vistas
+            const TODAS_LAS_IMAGENES = [
+                "Caja Agraria",
+                "Hospital San Lorenzo", 
+                "Banco Cafetero",
+                "Colegio La Sagrada Familia",
+                "Iglesia del Carmen",
+                "Almacenes Yep"
+            ];
+            
+            // Inicializar la flecha como oculta
             flechaSiguiente.style.display = 'none';
             flechaSiguiente.classList.remove('mostrar');
             
-            // Función para actualizar la exposición
-            function actualizarExposicion(imagenSrc, titulo, texto) {
-                console.log("Actualizando exposición:", {imagenSrc, titulo, texto});
-                
-                // Actualizar título y texto
-                tituloImagen.textContent = titulo || "Título no disponible";
-                textoImagen.textContent = texto || "Descripción no disponible";
-                
-                // Precargar la imagen para evitar problemas de carga
-                const img = new Image();
-                img.onload = function() {
-                    console.log("Imagen cargada correctamente:", imagenSrc);
-                    // Establecer la imagen como fondo una vez cargada
-                    fondoExposicion.style.backgroundImage = `url('${imagenSrc}')`;
-                };
-                img.onerror = function() {
-                    console.error("Error al cargar la imagen:", imagenSrc);
-                    fondoExposicion.style.backgroundImage = "none";
-                    fondoExposicion.style.backgroundColor = "#f0f0f0";
-                };
-                img.src = imagenSrc;
+            // Función para obtener imágenes vistas
+            function obtenerImagenesVistas() {
+                try {
+                    const vistas = JSON.parse(sessionStorage.getItem('imagenesVistasSession')) || [];
+                    console.log("Imágenes vistas recuperadas:", vistas);
+                    return vistas;
+                } catch (error) {
+                    console.error("Error al obtener imágenes vistas:", error);
+                    return [];
+                }
+            }
+            
+            // Función para guardar imágenes vistas
+            function guardarImagenesVistas(vistas) {
+                try {
+                    sessionStorage.setItem('imagenesVistasSession', JSON.stringify(vistas));
+                    console.log("Imágenes vistas guardadas:", vistas);
+                } catch (error) {
+                    console.error("Error al guardar imágenes vistas:", error);
+                }
             }
             
             // Función para verificar si todas las imágenes han sido vistas
             function verificarTodasVistas() {
-                const imagenesVistas = JSON.parse(sessionStorage.getItem('imagenesVistasSession')) || [];
-                const todasLasImagenes = [
-                    "Caja Agraria",
-                    "Hospital San Lorenzo", 
-                    "Banco Cafetero",
-                    "Colegio La Sagrada Familia",
-                    "Iglesia del Carmen",
-                    "Almacenes Yep"
-                ];
+                const imagenesVistas = obtenerImagenesVistas();
                 
-                console.log("Verificando en exposición:", {
-                    imagenesVistas: imagenesVistas,
-                    total: imagenesVistas.length,
-                    necesarias: 6
-                });
+                console.log("=== VERIFICANDO EN EXPOSICIÓN ===");
+                console.log("Imágenes requeridas:", TODAS_LAS_IMAGENES);
+                console.log("Imágenes vistas:", imagenesVistas);
                 
-                // Verificar si todos los textos están en el array de imágenes vistas
-                const todasVistas = todasLasImagenes.every(texto => imagenesVistas.includes(texto));
+                // Verificar que todas las imágenes requeridas estén en las vistas
+                const todasVistas = TODAS_LAS_IMAGENES.every(imagen => 
+                    imagenesVistas.includes(imagen)
+                );
                 
-                if (todasVistas && imagenesVistas.length === 6) {
+                console.log("¿Todas las imágenes han sido vistas?", todasVistas);
+                
+                if (todasVistas) {
                     flechaSiguiente.classList.add('mostrar');
                     flechaSiguiente.style.display = 'block';
-                    console.log("✓ Todas las imágenes han sido vistas. Mostrando flecha de siguiente sección.");
+                    console.log("✅ TODAS LAS IMÁGENES VISTAS - Flecha activada en exposición");
                 } else {
                     flechaSiguiente.classList.remove('mostrar');
                     flechaSiguiente.style.display = 'none';
-                    console.log("✗ Faltan imágenes por ver:", 
-                        todasLasImagenes.filter(texto => !imagenesVistas.includes(texto)));
+                    
+                    // Mostrar cuáles faltan
+                    const faltantes = TODAS_LAS_IMAGENES.filter(imagen => 
+                        !imagenesVistas.includes(imagen)
+                    );
+                    console.log("❌ Faltan por ver:", faltantes);
                 }
             }
             
-            // Cargar imagen inicial si existe
+            // Cargar y mostrar la imagen seleccionada
             const datosGuardados = sessionStorage.getItem('imagenSeleccionada');
             if (datosGuardados) {
                 try {
                     const datos = JSON.parse(datosGuardados);
-                    console.log("Datos recuperados de sessionStorage:", datos);
+                    console.log("🖼️ Cargando imagen:", datos.titulo);
                     
-                    // Verificar que los datos necesarios existen
-                    if (datos.imagen && datos.titulo) {
-                        actualizarExposicion(datos.imagen, datos.titulo, datos.texto);
-                        
-                        // Marcar esta imagen como vista en sessionStorage
-                        let imagenesVistas = JSON.parse(sessionStorage.getItem('imagenesVistasSession')) || [];
-                        if (!imagenesVistas.includes(datos.titulo)) {
-                            imagenesVistas.push(datos.titulo);
-                            sessionStorage.setItem('imagenesVistasSession', JSON.stringify(imagenesVistas));
-                            console.log("Imagen marcada como vista en exposición:", datos.titulo);
-                            console.log("Total de imágenes vistas:", imagenesVistas.length);
-                        }
-                        
-                        // Verificar si ya se vieron todas las imágenes
-                        verificarTodasVistas();
-                    } else {
-                        console.error("Datos incompletos en sessionStorage:", datos);
+                    // Mostrar la imagen
+                    tituloImagen.textContent = datos.titulo;
+                    textoImagen.textContent = datos.texto;
+                    fondoExposicion.style.backgroundImage = `url('${datos.imagen}')`;
+                    
+                    // Marcar esta imagen como vista (doble verificación)
+                    let imagenesVistas = obtenerImagenesVistas();
+                    if (!imagenesVistas.includes(datos.titulo)) {
+                        imagenesVistas.push(datos.titulo);
+                        guardarImagenesVistas(imagenesVistas);
+                        console.log("📝 Imagen marcada como vista en exposición:", datos.titulo);
                     }
+                    
+                    // Verificar estado
+                    verificarTodasVistas();
+                    
                 } catch (error) {
-                    console.error("Error al parsear datos:", error);
+                    console.error("❌ Error al cargar datos:", error);
                 }
             } else {
-                console.log("No hay datos guardados en sessionStorage");
+                console.log("⚠️ No hay imagen seleccionada para mostrar");
             }
             
             // Limpiar datos de imagen seleccionada después de mostrarla
-            // Esto evita que se muestre la misma imagen si el usuario recarga
             setTimeout(() => {
                 sessionStorage.removeItem('imagenSeleccionada');
-                console.log("Datos de imagen seleccionada limpiados");
+                console.log("🧹 Datos de imagen seleccionada limpiados");
             }, 100);
             
             // Verificación final
             setTimeout(() => {
-                console.log("Verificación final en exposición");
-                verificarTodasVistas();
+                console.log("=== ESTADO FINAL EN EXPOSICIÓN ===");
+                console.log("Imágenes vistas total:", obtenerImagenesVistas().length);
+                console.log("Flecha visible:", flechaSiguiente.classList.contains('mostrar'));
             }, 200);
         });

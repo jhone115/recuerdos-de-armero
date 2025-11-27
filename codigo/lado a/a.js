@@ -1,65 +1,83 @@
-        // a.js - Lado A Control (Versión Corregida)
+        // a.js - Lado A Control (Sistema de rastreo mejorado)
         document.addEventListener('DOMContentLoaded', function() {
             const itemsGaleria = document.querySelectorAll('.item-galeria');
             const flechaSiguiente = document.getElementById('flecha-siguiente');
             
-            console.log("Página cargada - Estado inicial");
-            console.log("Flecha siguiente:", flechaSiguiente);
+            // Lista de todas las imágenes que deben ser vistas
+            const TODAS_LAS_IMAGENES = [
+                "Caja Agraria",
+                "Hospital San Lorenzo", 
+                "Banco Cafetero",
+                "Colegio La Sagrada Familia",
+                "Iglesia del Carmen",
+                "Almacenes Yep"
+            ];
             
-            // INICIALMENTE ASEGURAR QUE LA FLECHA ESTÉ OCULTA
+            console.log("=== INICIALIZANDO SISTEMA DE RASTREO ===");
+            
+            // Inicializar la flecha como oculta
             flechaSiguiente.style.display = 'none';
             flechaSiguiente.classList.remove('mostrar');
             
-            // Array temporal para rastrear imágenes vistas en esta sesión
-            let imagenesVistas = [];
+            // Función para obtener imágenes vistas
+            function obtenerImagenesVistas() {
+                try {
+                    const vistas = JSON.parse(sessionStorage.getItem('imagenesVistasSession')) || [];
+                    console.log("Imágenes vistas recuperadas:", vistas);
+                    return vistas;
+                } catch (error) {
+                    console.error("Error al obtener imágenes vistas:", error);
+                    return [];
+                }
+            }
+            
+            // Función para guardar imágenes vistas
+            function guardarImagenesVistas(vistas) {
+                try {
+                    sessionStorage.setItem('imagenesVistasSession', JSON.stringify(vistas));
+                    console.log("Imágenes vistas guardadas:", vistas);
+                } catch (error) {
+                    console.error("Error al guardar imágenes vistas:", error);
+                }
+            }
             
             // Función para verificar si todas las imágenes han sido vistas
             function verificarTodasVistas() {
-                // Obtener todos los textos únicos de las imágenes
-                const todosTextos = Array.from(itemsGaleria).map(item => item.getAttribute('data-texto'));
+                const imagenesVistas = obtenerImagenesVistas();
                 
-                // Verificar si todos los textos están en el array de imágenes vistas
-                const todasVistas = todosTextos.every(texto => imagenesVistas.includes(texto));
+                console.log("=== VERIFICANDO IMÁGENES VISTAS ===");
+                console.log("Imágenes requeridas:", TODAS_LAS_IMAGENES);
+                console.log("Imágenes vistas:", imagenesVistas);
                 
-                console.log("Verificando imágenes vistas:", {
-                    imagenesVistas: imagenesVistas,
-                    todasLasImagenes: todosTextos,
-                    todasVistas: todasVistas
-                });
+                // Verificar que todas las imágenes requeridas estén en las vistas
+                const todasVistas = TODAS_LAS_IMAGENES.every(imagen => 
+                    imagenesVistas.includes(imagen)
+                );
                 
-                if (todasVistas && imagenesVistas.length === 6) {
+                console.log("¿Todas las imágenes han sido vistas?", todasVistas);
+                
+                if (todasVistas) {
                     flechaSiguiente.classList.add('mostrar');
                     flechaSiguiente.style.display = 'block';
-                    console.log("✓ Todas las imágenes han sido vistas. Mostrando flecha de siguiente sección.");
+                    console.log("✅ TODAS LAS IMÁGENES VISTAS - Flecha activada");
                 } else {
                     flechaSiguiente.classList.remove('mostrar');
                     flechaSiguiente.style.display = 'none';
-                    console.log("✗ Faltan imágenes por ver:", 
-                        todosTextos.filter(texto => !imagenesVistas.includes(texto)));
+                    
+                    // Mostrar cuáles faltan
+                    const faltantes = TODAS_LAS_IMAGENES.filter(imagen => 
+                        !imagenesVistas.includes(imagen)
+                    );
+                    console.log("❌ Faltan por ver:", faltantes);
                 }
+                
+                return todasVistas;
             }
             
-            // LIMPIAR CUALQUIER DATO PREVIO AL CARGAR LA PÁGINA
-            console.log("Limpiando datos de sesión previos...");
-            sessionStorage.removeItem('imagenesVistasSession');
-            sessionStorage.removeItem('imagenSeleccionada');
+            // Verificar estado al cargar la página
+            verificarTodasVistas();
             
-            // Verificar si hay datos de sesión previos (solo para depuración)
-            const sessionData = sessionStorage.getItem('imagenesVistasSession');
-            if (sessionData) {
-                try {
-                    imagenesVistas = JSON.parse(sessionData);
-                    console.log("Datos de sesión recuperados:", imagenesVistas);
-                    verificarTodasVistas();
-                } catch (error) {
-                    console.error("Error al parsear datos de sesión:", error);
-                    imagenesVistas = [];
-                }
-            } else {
-                console.log("No hay datos de sesión previos - empezando desde cero");
-                imagenesVistas = [];
-            }
-            
+            // Configurar event listeners para cada imagen
             itemsGaleria.forEach(item => {
                 item.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -68,17 +86,16 @@
                     const texto = this.getAttribute('data-texto');
                     const descripcion = this.getAttribute('data-descripcion');
                     
-                    console.log("Clic en imagen:", texto);
+                    console.log("🖱️ Clic en imagen:", texto);
                     
-                    // Verificar que todos los datos necesarios existen
+                    // Validar datos
                     if (!imagenSrc || !texto) {
-                        console.error("Datos incompletos en el elemento de galería:", this);
-                        alert("Error: Datos de imagen incompletos. Verifica la configuración.");
+                        console.error("❌ Datos incompletos en:", this);
                         return;
                     }
                     
-                    // Guardar datos temporales para la exposición (solo para esta navegación)
-                    const datos = {
+                    // Preparar datos para la exposición
+                    const datosExposicion = {
                         titulo: texto,
                         imagen: imagenSrc,
                         texto: descripcion,
@@ -86,34 +103,34 @@
                     };
                     
                     try {
-                        // Usar sessionStorage en lugar de localStorage
-                        sessionStorage.setItem('imagenSeleccionada', JSON.stringify(datos));
-                        console.log("Datos guardados en sessionStorage:", datos);
+                        // Guardar datos para la exposición
+                        sessionStorage.setItem('imagenSeleccionada', JSON.stringify(datosExposicion));
+                        console.log("📤 Datos guardados para exposición:", datosExposicion);
                         
-                        // Agregar esta imagen a las vistas si no está ya
+                        // Actualizar lista de imágenes vistas
+                        let imagenesVistas = obtenerImagenesVistas();
                         if (!imagenesVistas.includes(texto)) {
                             imagenesVistas.push(texto);
-                            // Guardar en sessionStorage para persistir durante la sesión
-                            sessionStorage.setItem('imagenesVistasSession', JSON.stringify(imagenesVistas));
-                            console.log("Imagen agregada a vistas:", texto);
-                            console.log("Total de imágenes vistas:", imagenesVistas.length);
+                            guardarImagenesVistas(imagenesVistas);
+                            console.log("📝 Imagen agregada a vistas:", texto);
                         }
                         
-                        // Verificar si ya se vieron todas las imágenes
+                        // Verificar estado actual
                         verificarTodasVistas();
                         
-                        // Redirigir a la página de exposición
+                        // Redirigir a exposición
+                        console.log("🔄 Redirigiendo a exposición...");
                         window.location.href = this.getAttribute('href');
+                        
                     } catch (error) {
-                        console.error("Error al guardar en sessionStorage:", error);
-                        alert("Error al guardar los datos. Verifica la consola para más detalles.");
+                        console.error("❌ Error crítico:", error);
                     }
                 });
             });
             
-            // Verificación final al cargar
-            setTimeout(() => {
-                console.log("Verificación final al cargar la página");
-                verificarTodasVistas();
-            }, 100);
+            // Depuración: mostrar estado completo
+            console.log("=== ESTADO FINAL INICIAL ===");
+            console.log("Total de imágenes en galería:", itemsGaleria.length);
+            console.log("Imágenes vistas actualmente:", obtenerImagenesVistas().length);
+            console.log("Flecha visible:", flechaSiguiente.classList.contains('mostrar'));
         });
