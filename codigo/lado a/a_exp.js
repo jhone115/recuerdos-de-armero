@@ -1,4 +1,4 @@
-        // a_exp.js - Lado A Exposición (Versión Mejorada)
+        // a_exp.js - Lado A Exposición (Sin persistencia)
         document.addEventListener('DOMContentLoaded', function() {
             const fondoExposicion = document.getElementById('fondo-exposicion');
             const tituloImagen = document.getElementById('titulo-imagen');
@@ -68,7 +68,7 @@
             
             // Función para verificar si todas las imágenes han sido vistas
             function verificarTodasVistas() {
-                const imagenesVistas = JSON.parse(localStorage.getItem('imagenesVistas')) || [];
+                const imagenesVistas = JSON.parse(sessionStorage.getItem('imagenesVistasSession')) || [];
                 const todasLasImagenes = [
                     "Caja Agraria",
                     "Hospital San Lorenzo", 
@@ -91,28 +91,28 @@
             }
             
             // Cargar imagen inicial si existe
-            const datosGuardados = localStorage.getItem('imagenSeleccionada');
+            const datosGuardados = sessionStorage.getItem('imagenSeleccionada');
             if (datosGuardados) {
                 try {
                     const datos = JSON.parse(datosGuardados);
-                    console.log("Datos recuperados:", datos);
+                    console.log("Datos recuperados de sessionStorage:", datos);
                     
                     // Verificar que los datos necesarios existen
                     if (datos.imagen && datos.titulo) {
                         actualizarExposicion(datos.imagen, datos.titulo, datos.texto);
                         
-                        // Marcar esta imagen como vista
-                        let imagenesVistas = JSON.parse(localStorage.getItem('imagenesVistas')) || [];
+                        // Marcar esta imagen como vista en sessionStorage
+                        let imagenesVistas = JSON.parse(sessionStorage.getItem('imagenesVistasSession')) || [];
                         if (!imagenesVistas.includes(datos.titulo)) {
                             imagenesVistas.push(datos.titulo);
-                            localStorage.setItem('imagenesVistas', JSON.stringify(imagenesVistas));
+                            sessionStorage.setItem('imagenesVistasSession', JSON.stringify(imagenesVistas));
                             console.log("Imagen marcada como vista en exposición:", datos.titulo);
                         }
                         
                         // Verificar si ya se vieron todas las imágenes
                         verificarTodasVistas();
                     } else {
-                        console.error("Datos incompletos en localStorage:", datos);
+                        console.error("Datos incompletos en sessionStorage:", datos);
                         mensajeError.innerHTML = "<p>Error: Datos de imagen incompletos.</p><button onclick=\"document.getElementById('mensaje-error').style.display='none'\">Cerrar</button>";
                         mensajeError.style.display = 'block';
                     }
@@ -122,10 +122,17 @@
                     mensajeError.style.display = 'block';
                 }
             } else {
-                console.log("No hay datos guardados en localStorage");
+                console.log("No hay datos guardados en sessionStorage");
                 mensajeError.innerHTML = "<p>No se ha seleccionado ninguna imagen.</p><button onclick=\"document.getElementById('mensaje-error').style.display='none'\">Cerrar</button>";
                 mensajeError.style.display = 'block';
             }
+            
+            // Limpiar datos de imagen seleccionada después de mostrarla
+            // Esto evita que se muestre la misma imagen si el usuario recarga
+            setTimeout(() => {
+                sessionStorage.removeItem('imagenSeleccionada');
+                console.log("Datos de imagen seleccionada limpiados");
+            }, 100);
             
             // También escuchar cambios en tiempo real por si se actualiza
             window.addEventListener('storage', function(e) {
