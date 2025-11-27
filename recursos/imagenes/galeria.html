@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería Completa - Armero</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 30px;
+        }
+
+        .volver-inicio {
+            display: inline-block;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .volver-inicio:hover {
+            background: #555;
+        }
+
+        .categoria {
+            margin-bottom: 60px;
+        }
+
+        .categoria h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #444;
+            color: #fff;
+        }
+
+        .galeria-completa {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 20px 0;
+        }
+
+        .polaroid-completa {
+            background: white;
+            padding: 15px 15px 40px;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+            transform: rotate(1deg);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: #000;
+            text-align: center;
+        }
+
+        .polaroid-completa:nth-child(even) {
+            transform: rotate(-1deg);
+        }
+
+        .polaroid-completa:hover {
+            transform: rotate(0deg) scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+        }
+
+        .polaroid-completa img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .polaroid-completa p {
+            font-size: 14px;
+            margin-top: 10px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        /* Modal para pantalla completa */
+        .modal-fullscreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-fullscreen.mostrar {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-contenido {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .modal-contenido img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+
+        .cerrar-modal {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        .navegacion-modal {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .btn-navegacion {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .btn-navegacion:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .contador-modal {
+            position: absolute;
+            bottom: -40px;
+            left: 0;
+            color: white;
+            font-size: 16px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .categoria-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .galeria-completa {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 20px;
+            }
+            
+            .polaroid-completa {
+                padding: 10px 10px 30px;
+            }
+            
+            .polaroid-completa img {
+                height: 150px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Botón para volver al inicio -->
+        <a href="../../index.html" class="volver-inicio">
+            ← Volver al Inicio
+        </a>
+
+        <header>
+            <h1>Galería Completa - Armero</h1>
+            <p class="subtitle">Un recorrido visual por la historia de Armero: pasado, tragedia y presente</p>
+        </header>
+        
+        <!-- Sección Armero Antiguo -->
+        <section class="categoria">
+            <h2>Armero Antiguo</h2>
+            <div class="categoria-info">
+                Imágenes que capturan la vida y desarrollo de Armero antes de la tragedia de 1985.
+            </div>
+            <div class="galeria-completa" id="galeria-antiguo">
+                <!-- Las imágenes se cargarán con JavaScript -->
+            </div>
+        </section>
+        
+        <!-- Sección Armero Destruido -->
+        <section class="categoria">
+            <h2>Armero Destruido</h2>
+            <div class="categoria-info">
+                Fotografías que documentan la devastación tras la erupción del volcán Nevado del Ruiz.
+            </div>
+            <div class="galeria-completa" id="galeria-destruido">
+                <!-- Las imágenes se cargarán con JavaScript -->
+            </div>
+        </section>
+        
+        <!-- Sección Armero Nuevo -->
+        <section class="categoria">
+            <h2>Armero Nuevo</h2>
+            <div class="categoria-info">
+                Imágenes del Armero actual y sus instalaciones después de la reconstrucción.
+            </div>
+            <div class="galeria-completa" id="galeria-nuevo">
+                <!-- Las imágenes se cargarán con JavaScript -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal para pantalla completa -->
+    <div class="modal-fullscreen" id="modal-fullscreen">
+        <div class="modal-contenido">
+            <button class="cerrar-modal" id="cerrar-modal">&times;</button>
+            <img id="imagen-modal" src="" alt="Imagen en pantalla completa">
+            <div class="navegacion-modal">
+                <button class="btn-navegacion" id="btn-anterior">❮</button>
+                <button class="btn-navegacion" id="btn-siguiente">❯</button>
+            </div>
+            <div class="contador-modal" id="contador-modal">1 / 31</div>
+        </div>
+    </div>
+
+    <script src="galeria.js"></script>
+</body>
+</html>
