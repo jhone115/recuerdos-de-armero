@@ -28,9 +28,66 @@
             height: 60px;
             filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
         }
+        
+        /* Estilos para el modal de activación de audio */
+        .modal-audio {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .modal-audio.oculto {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .contenido-modal {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .contenido-modal h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .contenido-modal p {
+            margin-bottom: 20px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .btn-activar-audio {
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-activar-audio:hover {
+            background-color: #3a5a80;
+        }
     </style>
 </head>
 <body>
+
     <a href="a.html" class="flecha-volver arriba-izquierda">
         <img src="../../recursos/imagenes/atras.png" alt="Volver a galería">
     </a>
@@ -40,6 +97,10 @@
     </a>
     
     <div class="container-exposicion">
+                    <audio id="bgMusic" loop>
+                <source src="../../recursos/sonoros/Armero ciudad blanca (Rafael Falla Nieto)(MP3_160K).mp3" type="audio/mpeg">
+                Tu navegador no soporta el elemento de audio.
+            </audio>
         <div id="fondo-exposicion" class="fondo-exposicion"></div>
         
         <div class="titulo-container">
@@ -50,6 +111,49 @@
             <p id="texto-imagen">Descripción de la imagen...</p>
         </div>
     </div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const audio = document.getElementById('bgMusic');
+            const modalAudio = document.getElementById('modalAudio');
+            const btnActivarAudio = document.getElementById('btnActivarAudio');
+            
+            // Intentar reproducir el audio automáticamente (puede fallar en algunos navegadores)
+            const promesaAudio = audio.play();
+            
+            if (promesaAudio !== undefined) {
+                promesaAudio.then(function() {
+                    // Si se reproduce automáticamente, ocultar el modal
+                    modalAudio.classList.add('oculto');
+                }).catch(function(error) {
+                    // Si falla la reproducción automática, mostrar el modal
+                    console.log("La reproducción automática fue bloqueada. Mostrando modal de activación.");
+                });
+            }
+            
+            // Configurar el botón para activar el audio
+            btnActivarAudio.addEventListener('click', function() {
+                audio.play().then(function() {
+                    // Ocultar el modal cuando el audio se reproduzca correctamente
+                    modalAudio.classList.add('oculto');
+                    
+                    // Guardar preferencia del usuario para futuras visitas
+                    localStorage.setItem('audioActivado', 'true');
+                }).catch(function(error) {
+                    console.error("Error al reproducir el audio:", error);
+                    alert("No se pudo reproducir el audio. Por favor, verifica que tu navegador permita la reproducción de audio.");
+                });
+            });
+            
+            // Verificar si el usuario ya activó el audio en una visita anterior
+            if (localStorage.getItem('audioActivado') === 'true') {
+                modalAudio.classList.add('oculto');
+                // Intentar reproducir el audio automáticamente
+                audio.play().catch(function(error) {
+                    console.log("No se pudo reproducir automáticamente, a pesar de la preferencia guardada.");
+                });
+            }
+        });
+    </script>
     <script src="a_exp.js"></script>
 </body>
 </html>

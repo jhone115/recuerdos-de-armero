@@ -42,6 +42,10 @@
     </a>
     
     <div class="container-exposicion">
+                                <audio id="bgMusic" loop>
+                <source src="../../recursos/sonoros/b.mp3" type="audio/mpeg">
+                Tu navegador no soporta el elemento de audio.
+            </audio>
         <!-- Fondo con la imagen seleccionada -->
         <div id="fondo-exposicion" class="fondo-exposicion"></div>
         
@@ -50,7 +54,49 @@
             <p id="texto-imagen">Descripción de la imagen...</p>
         </div>
     </div>
-    
+                <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const audio = document.getElementById('bgMusic');
+            const modalAudio = document.getElementById('modalAudio');
+            const btnActivarAudio = document.getElementById('btnActivarAudio');
+            
+            // Intentar reproducir el audio automáticamente (puede fallar en algunos navegadores)
+            const promesaAudio = audio.play();
+            
+            if (promesaAudio !== undefined) {
+                promesaAudio.then(function() {
+                    // Si se reproduce automáticamente, ocultar el modal
+                    modalAudio.classList.add('oculto');
+                }).catch(function(error) {
+                    // Si falla la reproducción automática, mostrar el modal
+                    console.log("La reproducción automática fue bloqueada. Mostrando modal de activación.");
+                });
+            }
+            
+            // Configurar el botón para activar el audio
+            btnActivarAudio.addEventListener('click', function() {
+                audio.play().then(function() {
+                    // Ocultar el modal cuando el audio se reproduzca correctamente
+                    modalAudio.classList.add('oculto');
+                    
+                    // Guardar preferencia del usuario para futuras visitas
+                    localStorage.setItem('audioActivado', 'true');
+                }).catch(function(error) {
+                    console.error("Error al reproducir el audio:", error);
+                    alert("No se pudo reproducir el audio. Por favor, verifica que tu navegador permita la reproducción de audio.");
+                });
+            });
+            
+            // Verificar si el usuario ya activó el audio en una visita anterior
+            if (localStorage.getItem('audioActivado') === 'true') {
+                modalAudio.classList.add('oculto');
+                // Intentar reproducir el audio automáticamente
+                audio.play().catch(function(error) {
+                    console.log("No se pudo reproducir automáticamente, a pesar de la preferencia guardada.");
+                });
+            }
+        });
+    </script>
     <script src="b_exp.js"></script>
 </body>
 </html>
