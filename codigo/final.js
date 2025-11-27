@@ -75,3 +75,36 @@ document.addEventListener('DOMContentLoaded', function() {
     // Asegurar que el body ocupe toda la pantalla
     document.body.style.overflow = 'hidden';
 });
+
+// Función específica para manejar la sección memoria
+function inicializarSeccionMemoria() {
+    const seccionMemoria = document.getElementById('seccion-memoria');
+    const imagenMemoria = seccionMemoria.querySelector('img');
+    
+    // Asegurar que la imagen cargue correctamente
+    if (imagenMemoria) {
+        imagenMemoria.onload = function() {
+            console.log('Imagen de memoria cargada correctamente');
+            // Forzar redibujado
+            window.dispatchEvent(new Event('resize'));
+        };
+        
+        // Si la imagen ya está cargada
+        if (imagenMemoria.complete) {
+            window.dispatchEvent(new Event('resize'));
+        }
+    }
+}
+
+// Llamar esta función cuando la sección memoria se active
+document.addEventListener('DOMContentLoaded', function() {
+    // ... tu código existente ...
+    
+    // Inicializar sección memoria
+    inicializarSeccionMemoria();
+    
+    // También inicializar cuando cambie el hash
+    window.addEventListener('hashchange', function() {
+        setTimeout(inicializarSeccionMemoria, 50);
+    });
+});

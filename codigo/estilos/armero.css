@@ -1027,9 +1027,94 @@ h1 {
     justify-content: center;    /* centra el bloque de texto */
     align-items: center;
 }
-#seccion-memoria img {
+/* ESTILOS CORREGIDOS PARA LA SECCIÓN MEMORIA CON IMAGEN */
+#seccion-memoria.activa {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    background: #000000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#seccion-memoria.activa > div {
     width: 100%;
-    height: 100vh;     /* altura completa de la pantalla */
-    object-fit: cover; /* recorta para cubrir, no deforma */
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#seccion-memoria.activa a {
     display: block;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+#seccion-memoria.activa img {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+#seccion-memoria.activa img:hover {
+    transform: scale(1.02);
+}
+
+/* Asegurar que el enlace ocupe toda la pantalla */
+#seccion-memoria.activa a {
+    position: relative;
+    z-index: 10;
+}/* ESTILOS CORREGIDOS PARA LA SECCIÓN MEMORIA CON IMAGEN */
+#seccion-memoria.activa {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    background: #000000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#seccion-memoria.activa > div {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#seccion-memoria.activa a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+#seccion-memoria.activa img {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+#seccion-memoria.activa img:hover {
+    transform: scale(1.02);
+}
+
+/* Asegurar que el enlace ocupe toda la pantalla */
+#seccion-memoria.activa a {
+    position: relative;
+    z-index: 10;
 }
