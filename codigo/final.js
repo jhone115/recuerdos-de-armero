@@ -1,52 +1,43 @@
 // Navegación entre secciones
 document.addEventListener('DOMContentLoaded', function() {
-    // Manejar la navegación por hash
+
     function manejarNavegacionHash() {
         const hash = window.location.hash;
         const secciones = document.querySelectorAll('.seccion');
-        
+
         // Ocultar todas las secciones
         secciones.forEach(seccion => {
             seccion.classList.remove('activa');
         });
-        
-        // Mostrar la sección correspondiente al hash
+
+        // Si existe un hash, mostrar esa sección
         if (hash) {
             const seccionObjetivo = document.querySelector(hash);
             if (seccionObjetivo) {
                 seccionObjetivo.classList.add('activa');
             }
         } else {
-            // Mostrar la primera sección por defecto
-            document.getElementById('seccion-titulo').classList.add('activa');
+            // Mostrar la PRIMERA sección por defecto
+            document.getElementById('historia-final').classList.add('activa');
         }
     }
-    
-    // Ejecutar al cargar la página
+
     manejarNavegacionHash();
-    
-    // Ejecutar cuando cambie el hash
+
     window.addEventListener('hashchange', manejarNavegacionHash);
-    
-    // Smooth scroll para enlaces internos - CORREGIDO
+
+    // Smooth scroll para enlaces internos
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             const targetId = this.getAttribute('href');
-            
-            // Solo procesar si es un enlace interno (#)
+
             if (targetId.startsWith('#')) {
                 e.preventDefault();
-                
-                const target = document.querySelector(targetId);
-                if (target) {
-                    // Cambiar hash primero
-                    window.location.hash = targetId;
-                    
-                    // Luego manejar la navegación
-                    manejarNavegacionHash();
-                }
+
+                window.location.hash = targetId;
+                manejarNavegacionHash();
             }
-            // Si no es un enlace interno, dejar que el navegador maneje el enlace normalmente
         });
     });
+
 });
