@@ -1,5 +1,6 @@
 // Navegación entre secciones
 document.addEventListener('DOMContentLoaded', function() {
+    let seccionActual = null;
 
     function manejarNavegacionHash() {
         const hash = window.location.hash;
@@ -10,34 +11,67 @@ document.addEventListener('DOMContentLoaded', function() {
             seccion.classList.remove('activa');
         });
 
-        // Si existe un hash, mostrar esa sección
-        if (hash) {
+        // Si existe un hash válido, mostrar esa sección
+        if (hash && document.querySelector(hash)) {
             const seccionObjetivo = document.querySelector(hash);
             if (seccionObjetivo) {
                 seccionObjetivo.classList.add('activa');
+                seccionActual = seccionObjetivo;
             }
         } else {
             // Mostrar la PRIMERA sección por defecto
-            document.getElementById('historia-final').classList.add('activa');
+            const primeraSeccion = document.querySelector('.seccion');
+            if (primeraSeccion) {
+                primeraSeccion.classList.add('activa');
+                seccionActual = primeraSeccion;
+                window.location.hash = primeraSeccion.id;
+            }
         }
+
+        // Forzar el redimensionamiento para evitar espacios vacíos
+        setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        }, 100);
     }
 
+    function navegarASeccion(idSeccion) {
+        window.location.hash = idSeccion;
+    }
+
+    // Inicializar
     manejarNavegacionHash();
 
+    // Event listeners
     window.addEventListener('hashchange', manejarNavegacionHash);
+    window.addEventListener('load', manejarNavegacionHash);
 
-    // Smooth scroll para enlaces internos
+    // Smooth scroll mejorado
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             const targetId = this.getAttribute('href');
-
-            if (targetId.startsWith('#')) {
+            
+            if (targetId && targetId !== '#' && document.querySelector(targetId)) {
                 e.preventDefault();
-
-                window.location.hash = targetId;
-                manejarNavegacionHash();
+                navegarASeccion(targetId);
+                
+                // Scroll suave al inicio de la sección
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
             }
         });
     });
 
+    // Prevenir scroll no deseado
+    document.addEventListener('wheel', function(e) {
+        if (e.ctrlKey) return; // Permitir zoom con Ctrl
+        e.preventDefault();
+    }, { passive: false });
+
+    // Asegurar que el body ocupe toda la pantalla
+    document.body.style.overflow = 'hidden';
 });
