@@ -27,6 +27,21 @@
             height: 60px;
             filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
         }
+        
+        /* Estilos para mensajes de error */
+        .mensaje-error {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 1001;
+        }
     </style>
 </head>
 <body>
@@ -36,9 +51,15 @@
     </a>
     
     <!-- Flecha de siguiente sección (inicialmente oculta) -->
-    <a href="codigo/lado b/b.html" class="flecha-siguiente" id="flecha-siguiente">
+    <a href="../lado b/b.html" class="flecha-volver abajo-derecha" id="flecha-siguiente">
         <img src="../../recursos/imagenes/adelante.png" alt="Siguiente sección">
     </a>
+    
+    <!-- Mensaje de error -->
+    <div class="mensaje-error" id="mensaje-error">
+        <p>Error al cargar la imagen. Verifica que el archivo exista.</p>
+        <button onclick="document.getElementById('mensaje-error').style.display='none'">Cerrar</button>
+    </div>
     
     <div class="container-exposicion">
         <!-- Fondo con la imagen seleccionada -->
