@@ -134,3 +134,30 @@
             console.log("Imágenes vistas actualmente:", obtenerImagenesVistas().length);
             console.log("Flecha visible:", flechaSiguiente.classList.contains('mostrar'));
         });
+        // Auto-pantalla completa en móvil al cargar
+window.addEventListener('load', function() {
+    if (isMobileDevice()) {
+        setTimeout(() => {
+            activateFullscreen();
+        }, 1000); // Pequeño delay para permitir interacción del usuario
+    }
+});
+
+// Forzar landscape en móvil
+function forceLandscape() {
+    if (isMobileDevice() && window.innerHeight > window.innerWidth) {
+        // Intentar bloquear orientación (solo algunos navegadores)
+        if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(function(error) {
+                console.log('Orientación no se puede bloquear: ', error);
+            });
+        }
+    }
+}
+
+// Llamar después de pantalla completa
+document.addEventListener('fullscreenchange', function() {
+    if (isFullscreen()) {
+        forceLandscape();
+    }
+});
