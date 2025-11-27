@@ -5,11 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lado A - Exposición</title>
     <link rel="stylesheet" href="../estilos/armero.css">
+    <style>
+        /* Estilos para la flecha de siguiente sección */
+        .flecha-siguiente {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .flecha-siguiente.mostrar {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .flecha-siguiente img {
+            width: 60px;
+            height: 60px;
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+        }
+    </style>
 </head>
 <body>
     <!-- Flecha para volver atrás (arriba izquierda) -->
     <a href="a.html" class="flecha-volver arriba-izquierda">
         <img src="../../recursos/imagenes/atras.png" alt="Volver a galería">
+    </a>
+    
+    <!-- Flecha de siguiente sección (inicialmente oculta) -->
+    <a href="codigo/lado b/b.html" class="flecha-siguiente" id="flecha-siguiente">
+        <img src="../../recursos/imagenes/adelante.png" alt="Siguiente sección">
     </a>
     
     <div class="container-exposicion">
