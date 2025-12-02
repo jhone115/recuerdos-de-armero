@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lado A - Exposición</title>
     <link rel="stylesheet" href="../estilos/armero.css">
+    <link rel="icon" type="image/png" href="../../recursos/imagenes/logos/Logo - Conmemoración Armero_1-03.png">
+    <!-- Agrega los estilos CSS que te proporcioné arriba aquí -->
     <style>
         .flecha-siguiente {
             position: fixed;
@@ -101,7 +103,7 @@
 
         .indicador-audio.mostrar {
             display: block;
-        }
+        }       
     </style>
 </head>
 <body>
@@ -132,18 +134,30 @@
             <source src="../../recursos/sonoros/Armero ciudad blanca (Rafael Falla Nieto)(MP3_160K).mp3" type="audio/mpeg">
             Tu navegador no soporta el elemento de audio.
         </audio>
-        <div id="fondo-exposicion" class="fondo-exposicion"></div>
         
-        <div class="titulo-container">
-            <h1 id="titulo-imagen">Título de la imagen</h1>
+        <!-- Fondo estático -->
+        <div class="fondo-estatico"></div>
+        
+        <!-- Contenedor de la polaroid con título integrado -->
+        <div class="contenedor-polaroid">
+            <div class="marco-polaroid">
+                <!-- Imagen ampliada -->
+                <img id="polaroid-imagen" class="polaroid-imagen" src="" alt="Imagen ampliada">
+                
+                <!-- Título de la imagen (dentro de la polaroid) -->
+                <div class="titulo-polaroid">
+                    <h1 id="titulo-imagen">Título de la imagen</h1>
+                </div>
+            </div>
         </div>
         
+        <!-- Texto descriptivo (separado, debajo) -->
         <div class="texto-container">
             <p id="texto-imagen">Descripción de la imagen...</p>
         </div>
     </div>
     
-    <script>
+  <script>
         // Almacenamiento para mantener el estado del audio entre páginas
         const AUDIO_STORAGE_KEY = 'audioEstadoArmero';
         
@@ -243,6 +257,8 @@
             }, 5 * 60 * 1000); // Verificar cada 5 minutos
         });
     </script>
+    
+    <!-- Ahora modifica el archivo a_exp.js según lo siguiente -->
     <script src="a_exp.js"></script>
 </body>
 </html>

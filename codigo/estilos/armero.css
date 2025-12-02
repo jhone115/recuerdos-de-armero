@@ -86,7 +86,6 @@ body {
     transition: all 0.3s ease;
     border: none;
     background: none;
-    cursor: pointer;
     display: inline-block;
 }
 
@@ -300,7 +299,7 @@ h1 {
 
 #texto-imagen {
     margin-top: 15px;
-    font-size: 1.2rem;
+    font-size: 1.0rem;
     font-weight: bold;
 }
 /* ========== RESPONSIVE - TABLET ========== */
@@ -836,9 +835,9 @@ h1 {
 
 .texto-container p {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 5px;
     line-height: 1.6;
-    text-align: justify;
+    text-align: left;
 }
 
 .polaroid-b {
@@ -1020,13 +1019,6 @@ h1 {
     justify-content: center;    /* centra el bloque de texto */
     align-items: center;
 }
-#agradecimiento {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;    /* centra el bloque de texto */
-    align-items: center;
-}
 /* ESTILOS CORREGIDOS PARA LA SECCIÓN MEMORIA CON IMAGEN */
 #seccion-memoria.activa {
     display: flex !important;
@@ -1117,4 +1109,134 @@ h1 {
 #seccion-memoria.activa a {
     position: relative;
     z-index: 10;
+}
+
+.menu-botones {
+    display: flex;
+    gap: 40px;            /* Separación entre botones */
+    justify-content: center; 
+    margin-top: 40px;
+}
+
+.btn-menu {
+    padding: 10px 30px;
+    border: 2px solid #ffffff;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 18px;
+    transition: 0.3s ease;
+    display: inline-block;
+}
+
+.btn-menu:hover {
+    background-color: rgba(255, 255, 255, 0.15); /* Brillo al pasar */
+    transform: scale(1.05);
+}
+
+/* Estilos para la exposición mejorada con título en polaroid */
+.container-exposicion {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.fondo-estatico {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../../recursos/imagenes/textura papel.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+    /* Opcional: agregar un overlay para mejorar legibilidad */
+    background-blend-mode: overlay;
+}
+
+.contenedor-polaroid {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: auto;
+    max-width: 45%;
+}
+
+.polaroid-imagen {
+    max-width: 100%;
+    max-height: 60vh;
+    object-fit: contain;
+    border-radius: 3px 3px 0 0;
+    display: block;
+}
+
+.titulo-polaroid {
+    width: 100%;
+    background-color: white;
+    padding: 20px 25px;
+    text-align: center;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-top: -4px; /* Para unir con la imagen */
+}
+
+.titulo-polaroid h1 {
+    color: #333;
+    font-size: 2rem;
+    margin: 0;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    line-height: 1.3;
+}
+
+.marco-polaroid {
+    background-color: white;
+    padding: 15px 15px 0 15px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.texto-container1 {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    width: 80%;
+    max-width: 800px;
+    max-height: 20vh;
+    overflow-y: auto;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.texto-container1 p {
+    color: #333;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin: 0;
+    text-align: justify;
+}
+
+#agradecimiento {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                url('../../recursos/imagenes/galeria armero antiguo/Imagen de WhatsApp 2025-10-24 a las 20.15.05_b69ebf4a.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
