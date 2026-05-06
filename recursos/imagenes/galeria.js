@@ -1,4 +1,3 @@
-        // Datos de las imágenes organizadas por categorías
         const imagenes = {
             antiguo: [
                 { src: "../../recursos/imagenes/galeria armero antiguo/Imagen de WhatsApp 2025-10-24 a las 20.15.04_d19f2e06.jpg", nombre: "Armero Antiguo 1" },
@@ -58,7 +57,6 @@
                 imagenes.antiguo.length + imagenes.destruido.length + imagenes.nuevo.length, 
                 "imágenes");
             
-            // Función para crear elementos polaroid
             function crearPolaroid(imagen, categoria, indexGlobal) {
                 const polaroid = document.createElement('div');
                 polaroid.className = 'polaroid-completa';
@@ -74,7 +72,6 @@
                 polaroid.appendChild(img);
                 polaroid.appendChild(nombre);
                 
-                // Agregar a la lista global de imágenes para el modal
                 todasLasImagenes.push({
                     src: imagen.src,
                     nombre: imagen.nombre
@@ -83,18 +80,15 @@
                 return polaroid;
             }
             
-            // Cargar imágenes en las galerías
             function cargarGalerias() {
                 let indiceGlobal = 0;
                 
-                // Cargar Armero Antiguo
                 imagenes.antiguo.forEach(imagen => {
                     const polaroid = crearPolaroid(imagen, 'antiguo', indiceGlobal);
                     galeriaAntiguo.appendChild(polaroid);
                     indiceGlobal++;
                 });
                 
-                // Cargar Armero Destruido
                 imagenes.destruido.forEach(imagen => {
                     const polaroid = crearPolaroid(imagen, 'destruido', indiceGlobal);
                     galeriaDestruido.appendChild(polaroid);
@@ -157,14 +151,12 @@
             btnAnterior.addEventListener('click', imagenAnterior);
             btnSiguiente.addEventListener('click', imagenSiguiente);
             
-            // Cerrar modal al hacer clic fuera de la imagen
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {
                     cerrarModalFunc();
                 }
             });
             
-            // Navegación con teclado
             document.addEventListener('keydown', (e) => {
                 if (!modal.classList.contains('mostrar')) return;
                 
@@ -181,7 +173,6 @@
                 }
             });
             
-            // Delegación de eventos para las polaroids
             document.addEventListener('click', (e) => {
                 const polaroid = e.target.closest('.polaroid-completa');
                 if (polaroid) {
@@ -190,7 +181,6 @@
                 }
             });
             
-            // Precargar imágenes para mejor experiencia
             function precargarImagenes() {
                 console.log("🔄 Precargando imágenes...");
                 todasLasImagenes.forEach(imagen => {
@@ -199,10 +189,8 @@
                 });
             }
             
-            // Inicializar la galería
             cargarGalerias();
             
-            // Iniciar precarga después de un breve retraso
             setTimeout(precargarImagenes, 1000);
             
             console.log("✅ Galería completa inicializada y lista");
@@ -213,14 +201,12 @@ window.addEventListener('load', function() {
     if (isMobileDevice()) {
         setTimeout(() => {
             activateFullscreen();
-        }, 1000); // Pequeño delay para permitir interacción del usuario
+        }, 1000);
     }
 });
 
-// Forzar landscape en móvil
 function forceLandscape() {
     if (isMobileDevice() && window.innerHeight > window.innerWidth) {
-        // Intentar bloquear orientación (solo algunos navegadores)
         if (screen.orientation && screen.orientation.lock) {
             screen.orientation.lock('landscape').catch(function(error) {
                 console.log('Orientación no se puede bloquear: ', error);
@@ -229,7 +215,6 @@ function forceLandscape() {
     }
 }
 
-// Llamar después de pantalla completa
 document.addEventListener('fullscreenchange', function() {
     if (isFullscreen()) {
         forceLandscape();
