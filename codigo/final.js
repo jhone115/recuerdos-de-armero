@@ -1,4 +1,3 @@
-// Navegación entre secciones
 document.addEventListener('DOMContentLoaded', function() {
     let seccionActual = null;
 
@@ -6,12 +5,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const hash = window.location.hash;
         const secciones = document.querySelectorAll('.seccion');
 
-        // Ocultar todas las secciones
         secciones.forEach(seccion => {
             seccion.classList.remove('activa');
         });
 
-        // Si existe un hash válido, mostrar esa sección
         if (hash && document.querySelector(hash)) {
             const seccionObjetivo = document.querySelector(hash);
             if (seccionObjetivo) {
@@ -19,7 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 seccionActual = seccionObjetivo;
             }
         } else {
-            // Mostrar la PRIMERA sección por defecto
             const primeraSeccion = document.querySelector('.seccion');
             if (primeraSeccion) {
                 primeraSeccion.classList.add('activa');
@@ -28,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Forzar el redimensionamiento para evitar espacios vacíos
         setTimeout(() => {
             window.dispatchEvent(new Event('resize'));
         }, 100);
@@ -38,14 +33,11 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.hash = idSeccion;
     }
 
-    // Inicializar
     manejarNavegacionHash();
 
-    // Event listeners
     window.addEventListener('hashchange', manejarNavegacionHash);
     window.addEventListener('load', manejarNavegacionHash);
 
-    // Smooth scroll mejorado
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             const targetId = this.getAttribute('href');
@@ -54,7 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 navegarASeccion(targetId);
                 
-                // Scroll suave al inicio de la sección
                 const targetElement = document.querySelector(targetId);
                 if (targetElement) {
                     targetElement.scrollIntoView({ 
@@ -66,61 +57,48 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Prevenir scroll no deseado
     document.addEventListener('wheel', function(e) {
-        if (e.ctrlKey) return; // Permitir zoom con Ctrl
+        if (e.ctrlKey) return;
         e.preventDefault();
     }, { passive: false });
 
-    // Asegurar que el body ocupe toda la pantalla
     document.body.style.overflow = 'hidden';
 });
 
-// Función específica para manejar la sección memoria
 function inicializarSeccionMemoria() {
     const seccionMemoria = document.getElementById('seccion-memoria');
     const imagenMemoria = seccionMemoria.querySelector('img');
     
-    // Asegurar que la imagen cargue correctamente
     if (imagenMemoria) {
         imagenMemoria.onload = function() {
             console.log('Imagen de memoria cargada correctamente');
-            // Forzar redibujado
             window.dispatchEvent(new Event('resize'));
         };
         
-        // Si la imagen ya está cargada
         if (imagenMemoria.complete) {
             window.dispatchEvent(new Event('resize'));
         }
     }
 }
 
-// Llamar esta función cuando la sección memoria se active
 document.addEventListener('DOMContentLoaded', function() {
-    // ... tu código existente ...
-    
-    // Inicializar sección memoria
     inicializarSeccionMemoria();
     
-    // También inicializar cuando cambie el hash
     window.addEventListener('hashchange', function() {
         setTimeout(inicializarSeccionMemoria, 50);
     });
 });
-// Auto-pantalla completa en móvil al cargar
+
 window.addEventListener('load', function() {
     if (isMobileDevice()) {
         setTimeout(() => {
             activateFullscreen();
-        }, 1000); // Pequeño delay para permitir interacción del usuario
+        }, 1000);
     }
 });
 
-// Forzar landscape en móvil
 function forceLandscape() {
     if (isMobileDevice() && window.innerHeight > window.innerWidth) {
-        // Intentar bloquear orientación (solo algunos navegadores)
         if (screen.orientation && screen.orientation.lock) {
             screen.orientation.lock('landscape').catch(function(error) {
                 console.log('Orientación no se puede bloquear: ', error);
@@ -129,7 +107,6 @@ function forceLandscape() {
     }
 }
 
-// Llamar después de pantalla completa
 document.addEventListener('fullscreenchange', function() {
     if (isFullscreen()) {
         forceLandscape();
